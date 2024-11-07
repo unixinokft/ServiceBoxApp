@@ -25,26 +25,23 @@ export default function TrackingScreen() {
 
   const startLocationTracking = async () => {
     try {
-      // Request foreground location permissions
       let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
       if (foregroundStatus !== 'granted') {
         alert('Foreground location permission not granted');
         return;
       }
-  
-      // Request background location permissions
+
       let { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
       if (backgroundStatus !== 'granted') {
         alert('Background location permission not granted');
         return;
       }
-  
-      // Start location updates with a specified task
+
       await Location.startLocationUpdatesAsync('LOCATION_TASK', {
         accuracy: Location.Accuracy.High,
-        timeInterval: 300000, // 5 minutes in milliseconds
-        distanceInterval: 50, // Only updates if the user has moved 50 meters
-        showsBackgroundLocationIndicator: true, // iOS only: shows blue bar for background location access
+        timeInterval: 300000,
+        distanceInterval: 50,
+        showsBackgroundLocationIndicator: true,
       });
       alert("Location tracking started successfully");
     } catch (error) {
@@ -52,7 +49,7 @@ export default function TrackingScreen() {
       alert("Issue while starting location tracking");
     }
   };
-  
+
   const stopLocationTracking = async () => {
     try {
       const hasStarted = await Location.hasStartedLocationUpdatesAsync('LOCATION_TASK');
@@ -66,7 +63,7 @@ export default function TrackingScreen() {
       console.error("Error stopping location tracking", error);
       alert("Issue while stopping location tracking");
     }
-  };  
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -76,10 +73,12 @@ export default function TrackingScreen() {
     <View style={styles.container}>
       <Text>Enable Location Tracking</Text>
       <Switch value={isTracking} onValueChange={setIsTracking} />
-      <Button name="log-out"
+      <Button
+        name="log-out"
         backgroundColor="#ff4d4d"
         onPress={handleLogout}
-        title={"Logout"}/>
+        title={"Logout"}
+      />
     </View>
   );
 }
