@@ -26,8 +26,9 @@ export default function TrackingScreen() {
 
   const startLocationTracking = async () => {
     try {
-      let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
-      if (foregroundStatus !== 'granted') {
+      let responseLocationReq = await Location.requestForegroundPermissionsAsync();
+      //alert(JSON.stringify(responseLocationReq))
+      if (responseLocationReq.status !== 'granted') {
         alert('Foreground location permission not granted');
         return;
       }
@@ -43,10 +44,9 @@ export default function TrackingScreen() {
         timeInterval: 300000,
         showsBackgroundLocationIndicator: true,
       });
-      alert("Location tracking started successfully");
+      //alert("Location tracking started successfully");
     } catch (error) {
       alert("Error starting location tracking", JSON.stringify(error));
-      alert("Issue while starting location tracking");
     }
   };
 
@@ -55,13 +55,12 @@ export default function TrackingScreen() {
       const hasStarted = await Location.hasStartedLocationUpdatesAsync('LOCATION_TASK');
       if (hasStarted) {
         await Location.stopLocationUpdatesAsync('LOCATION_TASK');
-        alert("Location tracking stopped");
+        //alert("Location tracking stopped");
       } else {
-        alert("Location tracking is not active");
+        //alert("Location tracking is not active");
       }
     } catch (error) {
       alert("Error stopping location tracking", JSON.stringify(error));
-      alert("Issue while stopping location tracking");
     }
   };
 

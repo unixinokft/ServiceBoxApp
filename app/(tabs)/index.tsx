@@ -36,11 +36,11 @@ export default function App() {
       const { locations } = data;
       const { latitude, longitude } = locations[0].coords;
       try {
-        // Save the location to Supabase
-        await supabase.from('locations').insert([{ latitude, longitude }]);
-        alert("Location transmitted to backend");
+        const user =await  supabase.auth.getUser()
+        //alert(JSON.stringify({ latitude, longitude, user_id: user.data.user?.id }));
+        await supabase.from('locations').insert({ latitude, longitude, user_id: user.data.user?.id });
       } catch (backendError) {
-        alert("Error saving location to Supabase", backendError);
+        alert("Error saving location to Supabase"+ JSON.stringify(backendError));
       }
     }
   });

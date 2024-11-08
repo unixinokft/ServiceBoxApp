@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch", "remote-notification"],
-        "locationAlwaysAndWhenInUsePermission": "This app needs access to your location at all times to track your location in the background."
+        "locationAlwaysAndWhenInUsePermission": "This app needs access to your location at all times to track your location in the background.",
+        "NSLocationWhenInUseUsageDescription": "This app needs access to your location to check your current position."
       },
       "bundleIdentifier": "com.unixino.serviceboxapp"
     },
