@@ -7,6 +7,7 @@ export default function TrackingScreen() {
   const [isTracking, setIsTracking] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
 
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       setAppState(nextAppState);
@@ -40,12 +41,11 @@ export default function TrackingScreen() {
       await Location.startLocationUpdatesAsync('LOCATION_TASK', {
         accuracy: Location.Accuracy.High,
         timeInterval: 300000,
-        distanceInterval: 50,
         showsBackgroundLocationIndicator: true,
       });
       alert("Location tracking started successfully");
     } catch (error) {
-      console.error("Error starting location tracking", error);
+      alert("Error starting location tracking", JSON.stringify(error));
       alert("Issue while starting location tracking");
     }
   };
@@ -60,7 +60,7 @@ export default function TrackingScreen() {
         alert("Location tracking is not active");
       }
     } catch (error) {
-      console.error("Error stopping location tracking", error);
+      alert("Error stopping location tracking", JSON.stringify(error));
       alert("Issue while stopping location tracking");
     }
   };

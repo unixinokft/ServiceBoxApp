@@ -44,29 +44,29 @@ export default function RootLayout() {
 
 fs.rename(oldDirPath, newDirPath, (error) => {
   if (error) {
-    return console.error(`Error renaming directory: ${error}`);
+    return alert(`Error renaming directory: ${error}`);
   }
-  console.log('/app moved to /app-example.');
+  alert('/app moved to /app-example.');
 
   fs.mkdir(newAppDirPath, { recursive: true }, (error) => {
     if (error) {
-      return console.error(`Error creating new app directory: ${error}`);
+      return alert(`Error creating new app directory: ${error}`);
     }
-    console.log('New /app directory created.');
+    alert('New /app directory created.');
 
     const indexPath = path.join(newAppDirPath, 'index.tsx');
     fs.writeFile(indexPath, indexContent, (error) => {
       if (error) {
-        return console.error(`Error creating index.tsx: ${error}`);
+        return alert(`Error creating index.tsx: ${error}`);
       }
-      console.log('app/index.tsx created.');
+      alert('app/index.tsx created.');
 
       const layoutPath = path.join(newAppDirPath, '_layout.tsx');
       fs.writeFile(layoutPath, layoutContent, (error) => {
         if (error) {
-          return console.error(`Error creating _layout.tsx: ${error}`);
+          return alert(`Error creating _layout.tsx: ${error}`);
         }
-        console.log('app/_layout.tsx created.');
+        alert('app/_layout.tsx created.');
       });
     });
   });

@@ -22,9 +22,9 @@ export default function LoginScreen({ navigation }) {
             password: password,
             email_confirm: true,
           });
-          console.log(error)
+          alert(error)
         } catch (error) {
-          console.log(error) 
+          alert(error) 
         }
       }
     }

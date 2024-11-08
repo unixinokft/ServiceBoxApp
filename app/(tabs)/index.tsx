@@ -29,7 +29,7 @@ export default function App() {
 
   TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
     if (error) {
-      console.error("Error in location task", error);
+      alert("Error in location task", error);
       return;
     }
     if (data) {
@@ -38,9 +38,9 @@ export default function App() {
       try {
         // Save the location to Supabase
         await supabase.from('locations').insert([{ latitude, longitude }]);
-        console.log("Location transmitted to backend");
+        alert("Location transmitted to backend");
       } catch (backendError) {
-        console.error("Error saving location to Supabase", backendError);
+        alert("Error saving location to Supabase", backendError);
       }
     }
   });
