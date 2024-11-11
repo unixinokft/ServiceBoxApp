@@ -27,20 +27,41 @@ export default function App() {
     };
   }, []);
 
+  let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
+
   TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
     if (error) {
-      alert("Error in location task", error);
+      alert("Error in location task: " + JSON.stringify(error));
       return;
     }
+  
     if (data) {
       const { locations } = data;
       const { latitude, longitude } = locations[0].coords;
-      try {
-        const user =await  supabase.auth.getUser()
-        //alert(JSON.stringify({ latitude, longitude, user_id: user.data.user?.id }));
-        await supabase.from('locations').insert({ latitude, longitude, user_id: user.data.user?.id });
-      } catch (backendError) {
-        alert("Error saving location to Supabase"+ JSON.stringify(backendError));
+  
+      // Get the current timestamp
+      const currentTimestamp = Date.now();
+  
+      // Check if 5 minutes (300000 ms) have passed since the last update
+      if (currentTimestamp - lastUpdateTimestamp >= 10000) {
+        try {
+          const user = await supabase.auth.getUser();
+          
+          // Send data to Supabase
+          await supabase.from('locations').insert({
+            latitude,
+            longitude,
+            user_id: user.data.user?.id,
+          });
+          
+          // Update last update timestamp
+          lastUpdateTimestamp = currentTimestamp;
+  
+        } catch (backendError) {
+          alert("Error saving location to Supabase: " + JSON.stringify(backendError));
+        }
+      } else {
+        console.log("Skipping location update to respect 5-minute interval.");
       }
     }
   });
