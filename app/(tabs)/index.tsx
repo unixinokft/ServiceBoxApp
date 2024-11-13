@@ -43,7 +43,7 @@ export default function App() {
       const currentTimestamp = Date.now();
   
       // Check if 5 minutes (300000 ms) have passed since the last update
-      if (currentTimestamp - lastUpdateTimestamp >= 10000) {
+      if (currentTimestamp - lastUpdateTimestamp >= 300000) {
         try {
           const user = await supabase.auth.getUser();
           
