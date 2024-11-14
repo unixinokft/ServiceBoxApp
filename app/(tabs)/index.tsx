@@ -38,6 +38,7 @@ export default function App() {
     if (data) {
       const { locations } = data;
       const { latitude, longitude } = locations[0].coords;
+    
   
       // Get the current timestamp
       const currentTimestamp = Date.now();
@@ -51,7 +52,7 @@ export default function App() {
           await supabase.from('locations').insert({
             latitude,
             longitude,
-            user_id: user.data.user?.id,
+            email: user.data.user?.email,
           });
           
           // Update last update timestamp
