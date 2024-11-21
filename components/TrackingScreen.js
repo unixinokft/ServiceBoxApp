@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Switch, StyleSheet, AppState, Button } from 'react-native';
 import { supabase } from '../app/utils/supabase';
-import * as Location from 'expo-location';
+// import * as Location from 'expo-location';
 
 export default function TrackingScreen() {
   const [isTracking, setIsTracking] = useState(false);
@@ -16,7 +16,7 @@ export default function TrackingScreen() {
     return () => subscription.remove();
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isTracking) {
       startLocationTracking();
     } else {
@@ -62,7 +62,7 @@ export default function TrackingScreen() {
     } catch (error) {
       alert("Error stopping location tracking", JSON.stringify(error));
     }
-  };
+  };*/
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
