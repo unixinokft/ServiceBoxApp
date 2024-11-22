@@ -1,11 +1,32 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg";
+import BG from "../assets/bg.svg";
+import BBOX from "../assets/bbox.svg";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function WelcomeScreen({ onContinue }) {
+    const insets = useSafeAreaInsets();
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Welcome to the App!</Text>
-            <Button title="Continue to Login" onPress={onContinue} />
+        <View style={{ paddingTop: insets.top, ...styles.container }}>
+            <View
+                style={{
+                    position: "absolute",
+                    top: 0,
+                }}
+            >
+                <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
+            </View>
+            {/* Use flex to center the logo */}
+            <View style={styles.logoContainer}>
+                <SvgServiceBoxLogo />
+            </View>
+            <TouchableOpacity style={styles.button} onPress={onContinue}>
+                <Text style={styles.buttonText}>Kezdj neki</Text>
+            </TouchableOpacity>
+            <View style={styles.logoContainerBBOX}>
+                <BBOX />
+            </View>
         </View>
     );
 }
@@ -13,13 +34,33 @@ export default function WelcomeScreen({ onContinue }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f0f0f0',
+        justifyContent: "flex-end", // This keeps the button at the bottom
+        alignItems: "center", // Centers all content horizontally
+        padding: 16,
+        backgroundColor: "#1c1c1e", // Dark gray background
     },
-    title: {
-        fontSize: 24,
-        marginBottom: 20,
-        fontWeight: 'bold',
+    logoContainer: {
+        flex: 1, // This ensures the container takes up available space
+        justifyContent: "center", // Centers logo vertically
+        alignItems: "center", // Centers logo horizontally
+        position: "absolute", // Keeps it fixed while other components are pushed below
+        top: "30%", // Starts from the top of the container
+    },
+    logoContainerBBOX: {
+        marginBottom: "5%", // Gives margin to the bottom logo
+    },
+    button: {
+        width: "100%",
+        backgroundColor: "#13B981", // Green button
+        padding: 20,
+        borderRadius: 30,
+        alignItems: "center",
+        position: "relative", // Keeps the button placed at the bottom
+        zIndex: 1, // Ensures the button appears on top of other elements
+    },
+    buttonText: {
+        color: "#fff",
+        fontWeight: "500",
+        fontSize: 16,
     },
 });

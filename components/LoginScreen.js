@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { supabase } from "../app/utils/supabase";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "react-native-gradients";
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import { Switch } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -76,13 +75,8 @@ export default function LoginScreen({ navigation }) {
           zIndex: 0,
           width: Dimensions.get("screen").width,
           height: Dimensions.get("screen").height - insets.top,
-          backgroundColor: "red",
         }}
       >
-        <LinearGradient
-          angle={90}
-          colorList={colorList} // Gradient colors
-        />
       </View>
       <View style={styles.logoContainer}>
         <SvgServiceBoxLogo />
