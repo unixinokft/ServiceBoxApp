@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import { Switch } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BG from "../assets/bg.svg";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -58,25 +59,15 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-
-  const colorList = [
-    { offset: "0%", color: "#000000", opacity: "1" }, // Color Stop 2
-    { offset: "100%", color: "#2F3438", opacity: "1" }, // Color Stop 1
-  ];
-  console.log(email)
-
   return (
     <View style={{ paddingTop: insets.top, ...styles.container }}>
       <View
         style={{
           position: "absolute",
           top: 0,
-          left: 0,
-          zIndex: 0,
-          width: Dimensions.get("screen").width,
-          height: Dimensions.get("screen").height - insets.top,
         }}
       >
+        <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
       </View>
       <View style={styles.logoContainer}>
         <SvgServiceBoxLogo />
@@ -84,7 +75,7 @@ export default function LoginScreen({ navigation }) {
       <Text
         style={{
           color: "#FAFAFA",
-          fontFamily: "Lexend-Bold",
+          //fontFamily: "Lexend-Bold",
           fontSize: 30,
           fontWeight: 700,
           marginBottom: "5%",
@@ -159,7 +150,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#1c1c1e", // Háttérszín sötét szürke
   },
   logoContainer: {
-    marginBottom: "30%",
+    flex: 1, // This ensures the container takes up available space
+    justifyContent: "center", // Centers logo vertically
+    alignItems: "center", // Centers logo horizontally
+    position: "absolute", // Keeps it fixed while other components are pushed below
+    top: "30%", // Starts from the top of the container
   },
   input: {
     width: "100%",
