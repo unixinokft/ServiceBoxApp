@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         position: "relative", // Keeps the button placed at the bottom
         zIndex: 1, // Ensures the button appears on top of other elements
+        marginBottom: "10%"
     },
     buttonText: {
         color: "#fff",
