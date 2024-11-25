@@ -7,6 +7,7 @@ import {
   Text,
   Image,
   Dimensions,
+  Keyboard,
 } from "react-native";
 import { supabase } from "../app/utils/supabase";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,7 +21,23 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [rememberMe, setRememberMe] = useState(true);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false); // Track keyboard visibility
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardVisible(false);
+    });
+
+    // Cleanup listeners on component unmount
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -69,9 +86,11 @@ export default function LoginScreen({ navigation }) {
       >
         <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
       </View>
-      <View style={styles.logoContainer}>
-        <SvgServiceBoxLogo />
-      </View>
+      {!isKeyboardVisible && ( // Hide the logo when the keyboard is visible
+        <View style={styles.logoContainer}>
+          <SvgServiceBoxLogo />
+        </View>
+      )}
       <Text
         style={{
           color: "#FAFAFA",

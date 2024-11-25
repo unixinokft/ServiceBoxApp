@@ -32,14 +32,18 @@ export default function App() {
 
     handleSession();
 
-    // Listen for auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        setSession(null);
-      } else {
-        setSession(session);
-      }
-    });
+    // Listen for auth state changes with a 1-second delay
+    setTimeout(() => {
+      const { data: listener } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          if (event === "SIGNED_OUT") {
+            setSession(false);
+          } else {
+            setSession(session);
+          }
+        }
+      );
+    }, 1000); // Delay of 1 second
   }, []);
 
   return (
