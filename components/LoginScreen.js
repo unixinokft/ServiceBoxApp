@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     paddingBottom: "15%",
     alignItems: "center",
-    padding: 16,
+    padding: "5%",
     backgroundColor: "#1c1c1e", // Háttérszín sötét szürke
   },
   logoContainer: {

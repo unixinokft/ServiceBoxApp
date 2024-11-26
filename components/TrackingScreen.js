@@ -3,7 +3,7 @@ import { View, Text, Switch, StyleSheet, AppState, Button } from 'react-native';
 import { supabase } from '../app/utils/supabase';
 // import * as Location from 'expo-location';
 
-export default function TrackingScreen() {
+export default function TrackingScreen({ navigation, route }) {
   const [isTracking, setIsTracking] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
 
@@ -68,6 +68,10 @@ export default function TrackingScreen() {
     await supabase.auth.signOut();
   };
 
+  const handlePrivacy = async () => {
+    route.params.setPrivacyAccepted(false)
+  };
+
   return (
     <View style={styles.container}>
       <Text>Enable Location Tracking</Text>
@@ -77,6 +81,12 @@ export default function TrackingScreen() {
         backgroundColor="#ff4d4d"
         onPress={handleLogout}
         title={"Logout"}
+      />
+      <Button
+        name="privacy"
+        backgroundColor="#ff4d4d"
+        onPress={handlePrivacy}
+        title={"Privacy policy"}
       />
     </View>
   );

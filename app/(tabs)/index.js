@@ -1,34 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { supabase } from '../utils/supabase';
-import { AppState } from 'react-native';
 import LoginScreen from '../../components/LoginScreen';
 import TrackingScreen from '../../components/TrackingScreen';
-import WelcomeScreen from '../../components/WelcomeScreen'; // New screen
+import WelcomeScreen from '../../components/WelcomeScreen';
+import PrivacyPolicyScreen from '../../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   const [session, setSession] = useState(null);
-  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true); // State to track WelcomeScreen
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
 
   useEffect(() => {
-    async function handleSession() {
+    const handleSession = async () => {
       try {
         const rememberMe = await AsyncStorage.getItem('rememberMe');
         if (rememberMe === 'false') {
           await supabase.auth.signOut();
         } else if (rememberMe === 'true') {
-          // Check for active session on load
-          supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-          });
+          // Ellenőrizzük az aktív session-t
+          const { data: { session } } = await supabase.auth.getSession();
+          setSession(session);
+
+          // Adatvédelmi nyilatkozat elfogadásának ellenőrzése
+          if (session?.user) {
+            const { data, error } = await supabase
+              .from('users')
+              .select('privacy_policy_accepted')
+              .eq('email', session.user.email)
+              .single();
+
+            if (error) {
+              console.error('Error checking privacy policy status:', error);
+            } else {
+              setPrivacyAccepted(data?.privacy_policy_accepted || false);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error checking rememberMe state:', error);
+        console.error('Error checking rememberMe state or session:', error);
       }
-    }
+    };
 
     handleSession();
 
@@ -54,17 +69,28 @@ export default function App() {
           component={(props) => (
             <WelcomeScreen
               {...props}
-              onContinue={() => setShowWelcomeScreen(false)} // Pass a handler to navigate away
+              onContinue={() => setShowWelcomeScreen(false)}
             />
           )}
           options={{ headerShown: false }}
         />
       ) : session ? (
-        <Stack.Screen
-          name="Tracking"
-          component={TrackingScreen}
-          options={{ headerShown: false }}
-        />
+        // Ha még nem fogadták el az adatvédelmi nyilatkozatot
+        privacyAccepted ? (
+          <Stack.Screen
+            name="Tracking"
+            component={TrackingScreen}
+            initialParams={{ setPrivacyAccepted: setPrivacyAccepted }}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <Stack.Screen
+            name="PrivacyPolicy"
+            component={PrivacyPolicyScreen}
+            initialParams={{ email: session.user.email, setPrivacyAccepted: setPrivacyAccepted }}
+            options={{ headerShown: false }}
+          />
+        )
       ) : (
         <Stack.Screen
           name="Login"
