@@ -5,7 +5,7 @@ import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl im
 import ChillBruh from "../assets/pihenek.svg"; // Az SVG fájl importja
 import Working from "../assets/dolgozom.svg"; // Az SVG fájl importja
 import BBOX from "../assets/bbox.svg";
-// import * as Location from 'expo-location';
+import * as Location from 'expo-location';
 
 export default function TrackingScreen({ navigation, route }) {
   const [isTracking, setIsTracking] = useState(false);
@@ -20,7 +20,7 @@ export default function TrackingScreen({ navigation, route }) {
     return () => subscription.remove();
   }, []);
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (isTracking) {
       startLocationTracking();
     } else {
@@ -66,7 +66,7 @@ export default function TrackingScreen({ navigation, route }) {
     } catch (error) {
       alert("Error stopping location tracking", JSON.stringify(error));
     }
-  };*/
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

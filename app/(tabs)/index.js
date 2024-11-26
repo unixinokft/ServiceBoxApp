@@ -6,6 +6,7 @@ import TrackingScreen from '../../components/TrackingScreen';
 import WelcomeScreen from '../../components/WelcomeScreen';
 import PrivacyPolicyScreen from '../../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as TaskManager from 'expo-task-manager';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,45 @@ export default function App() {
   const [session, setSession] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
   const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
+
+  let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
+
+  TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
+    if (error) {
+      alert("Error in location task: " + JSON.stringify(error));
+      return;
+    }
+
+    if (data) {
+      const { locations } = data;
+      const { latitude, longitude } = locations[0].coords;
+
+      // Get the current timestamp
+      const currentTimestamp = Date.now();
+
+      // Check if 5 minutes (300000 ms) have passed since the last update
+      if (currentTimestamp - lastUpdateTimestamp >= 300000) {
+        try {
+          const user = await supabase.auth.getUser();
+
+          // Send data to Supabase
+          await supabase.from('locations').insert({
+            latitude,
+            longitude,
+            user_id: user.data.user?.id,
+          });
+
+          // Update last update timestamp
+          lastUpdateTimestamp = currentTimestamp;
+
+        } catch (backendError) {
+          alert("Error saving location to Supabase: " + JSON.stringify(backendError));
+        }
+      } else {
+        console.log("Skipping location update to respect 5-minute interval.");
+      }
+    }
+  });
 
   useEffect(() => {
     const handleSession = async () => {
