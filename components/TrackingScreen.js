@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Switch, StyleSheet, AppState, Button } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, AppState, Animated, TouchableOpacity } from 'react-native';
 import { supabase } from '../app/utils/supabase';
+import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
+import ChillBruh from "../assets/pihenek.svg"; // Az SVG fájl importja
+import Working from "../assets/dolgozom.svg"; // Az SVG fájl importja
+import BBOX from "../assets/bbox.svg";
 // import * as Location from 'expo-location';
 
 export default function TrackingScreen({ navigation, route }) {
@@ -72,22 +76,65 @@ export default function TrackingScreen({ navigation, route }) {
     route.params.setPrivacyAccepted(false)
   };
 
+  const fadeAnim = useRef(new Animated.Value(1)).current; // Kezdő animáció értéke
+  const [currentImage, setCurrentImage] = useState(
+    require('../assets/bg_pihenek.png') // Az első háttérkép útvonala
+  );
+
+  const handlePress = () => {
+    // Gomb nyomás állapotának változtatása
+    setIsTracking(!isTracking);
+
+    // Indítsd az animációt
+    Animated.timing(fadeAnim, {
+      toValue: 0, // Teljes halványulás
+      duration: 500, // 2 másodperc
+      useNativeDriver: true,
+    }).start(() => {
+      // Cseréljük ki a háttérképet az animáció után
+      setCurrentImage(
+        isTracking
+          ? require('../assets/bg_pihenek.png') // Első háttérkép
+          : require('../assets/bg_dolgozom.png') // Második háttérkép
+      );
+
+      // Újraindítsuk az animációt (visszaállítjuk az áttetszőségét)
+      Animated.timing(fadeAnim, {
+        toValue: 1, // Teljesen láthatóvá válik
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Enable Location Tracking</Text>
-      <Switch value={isTracking} onValueChange={setIsTracking} />
-      <Button
-        name="log-out"
-        backgroundColor="#ff4d4d"
-        onPress={handleLogout}
-        title={"Logout"}
+      {/* Háttér animációval */}
+      <Animated.Image
+        source={currentImage}
+        style={[styles.background, { opacity: fadeAnim }]}
       />
-      <Button
-        name="privacy"
-        backgroundColor="#ff4d4d"
-        onPress={handlePrivacy}
-        title={"Privacy policy"}
-      />
+
+      {/* Fő tartalom */}
+      <View style={styles.overlay}>
+        <View style={styles.logoContainer}>
+          <SvgServiceBoxLogo />
+        </View>
+        <Text style={styles.title}>Válaszd ki az állapotod</Text>
+        <Text style={styles.subtitle}>
+          Állítsd be, hogy mi a jelenlegi státuszod a munkavégzés során
+        </Text>
+
+        {/* Interaktív gomb */}
+        <TouchableOpacity style={styles.button} onPress={handlePress}>
+          {isTracking ? <Working></Working> : <ChillBruh></ChillBruh>}
+        </TouchableOpacity>
+        <BBOX />
+        {/* Adatkezelési tájékoztató */}
+        <TouchableOpacity style={{ marginBottom: "10%" }} onPress={handlePrivacy}>
+          <Text style={styles.privacyText}>Adatkezelési tájékoztató</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -95,7 +142,52 @@ export default function TrackingScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: "black"
+  },
+  background: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
     alignItems: 'center',
+    paddingHorizontal: "5%",
+  },
+  title: {
+    color: "#FAFAFA",
+    fontSize: 30,
+    fontWeight: "700",
+    lineHeight: 32,
+    marginTop: "5%",
+    alignSelf: "flex-start",
+    paddingRight: "30%"
+  },
+  subtitle: {
+    marginTop: "5%",
+    paddingRight: "30%",
+    color: "#929292"
+  },
+  button: {
+    borderRadius: 25,
+    alignSelf: "center",
+    margin: "10%",
+    marginBottom: "20%"
+  },
+  privacyText: {
+    fontSize: 14,
+    color: '#fff',
+    textDecorationLine: 'underline',
+    marginTop: 20,
+    fontWeight: "500"
+  },
+  logoContainer: {
+    flex: 1, // This ensures the container takes up available space
+    justifyContent: "center", // Centers logo vertically
+    alignItems: "center", // Centers logo horizontally
+    position: "absolute", // Keeps it fixed while other components are pushed below
+    top: "30%", // Starts from the top of the container
   },
 });
