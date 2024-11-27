@@ -34,25 +34,91 @@ export default function App() {
       if (currentTimestamp - lastUpdateTimestamp >= 300000) {
         try {
           const user = await supabase.auth.getUser();
+          const userId = user.data.user?.id;
 
-          // Send data to Supabase
+          if (!userId) {
+            console.error("User not authenticated.");
+            return;
+          }
+
+          const device_time = new Date().toISOString(); // Current date and time
+
+          // Attempt to send the data to Supabase
           await supabase.from('locations').insert({
             latitude,
             longitude,
-            user_id: user.data.user?.id,
+            user_id: userId,
+            device_time,
           });
+
+          // Clear any cached locations since we're able to send data now
+          await sendCachedLocationsToDB();
 
           // Update last update timestamp
           lastUpdateTimestamp = currentTimestamp;
 
         } catch (backendError) {
-          alert("Error saving location to Supabase: " + JSON.stringify(backendError));
+          console.error("Error saving location to Supabase: ", backendError);
+
+          // Cache the location if sending fails
+          await cacheLocation({ latitude, longitude, device_time });
         }
       } else {
         console.log("Skipping location update to respect 5-minute interval.");
       }
     }
   });
+
+  /**
+   * Cache the location in AsyncStorage if it cannot be sent to the DB.
+   * @param {Object} location The location object containing latitude, longitude, and device_time.
+   */
+  async function cacheLocation(location) {
+    try {
+      const cachedLocations = await AsyncStorage.getItem('cachedLocations');
+      const locationsArray = cachedLocations ? JSON.parse(cachedLocations) : [];
+      locationsArray.push(location);
+      await AsyncStorage.setItem('cachedLocations', JSON.stringify(locationsArray));
+      console.log("Location cached.");
+    } catch (error) {
+      console.error("Error caching location: ", error);
+    }
+  }
+
+  /**
+   * Send all cached locations to the database.
+   */
+  async function sendCachedLocationsToDB() {
+    try {
+      const cachedLocations = await AsyncStorage.getItem('cachedLocations');
+      if (!cachedLocations) return;
+
+      const locationsArray = JSON.parse(cachedLocations);
+      if (locationsArray.length === 0) return;
+
+      const user = await supabase.auth.getUser();
+      const userId = user.data.user?.id;
+
+      if (!userId) {
+        console.error("User not authenticated.");
+        return;
+      }
+
+      // Attempt to send all cached locations in bulk
+      await supabase.from('locations').insert(
+        locationsArray.map(location => ({
+          ...location,
+          user_id: userId,
+        }))
+      );
+
+      // Clear the cache if the data was successfully sent
+      await AsyncStorage.removeItem('cachedLocations');
+      console.log("Cached locations successfully sent to the DB.");
+    } catch (error) {
+      console.error("Error sending cached locations to Supabase: ", error);
+    }
+  }
 
   useEffect(() => {
     const handleSession = async () => {
