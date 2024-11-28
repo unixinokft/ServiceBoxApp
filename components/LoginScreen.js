@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   Keyboard,
+  Platform,
 } from "react-native";
 import { supabase } from "../app/utils/supabase";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,19 +24,28 @@ export default function LoginScreen({ navigation }) {
   const [rememberMe, setRememberMe] = useState(true);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false); // Track keyboard visibility
   const insets = useSafeAreaInsets();
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
 
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      setIsKeyboardVisible(true);
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setIsKeyboardVisible(false);
-    });
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      (event) => {
+        const { height } = event.endCoordinates;
+        setKeyboardHeight(height);
+        setIsKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setIsKeyboardVisible(false);
+        setKeyboardHeight(0);
+      },
+    );
 
-    // Cleanup listeners on component unmount
     return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
     };
   }, []);
 
@@ -77,7 +87,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={{ paddingTop: insets.top, ...styles.container }}>
+    <View style={{ paddingTop: insets.top, marginBottom: Platform.OS === "ios" ? keyboardHeight : 0, ...styles.container }}>
       <View
         style={{
           position: "absolute",
@@ -118,9 +128,15 @@ export default function LoginScreen({ navigation }) {
         placeholder="Email"
         placeholderTextColor="#888"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(v) => {
+          setEmail(v.trim().toLowerCase());
+        }}
         style={styles.input}
         keyboardType="email-address"
+        autoCapitalize="none"  // Prevent automatic capitalization
+        autoCorrect={false}    // Disable autocorrect
+        accessible={true}      // Enable accessibility features
+        accessibilityLabel="Email input field"
       />
       <Text
         style={{
@@ -134,7 +150,7 @@ export default function LoginScreen({ navigation }) {
         Jelszó
       </Text>
       <TextInput
-        placeholder="Jelszó"
+        placeholder="••••••••••"
         placeholderTextColor="#888"
         value={password}
         onChangeText={setPassword}
@@ -193,11 +209,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: "6%",
-    marginTop: "-2%",
     alignSelf: "flex-start",
   },
   switch: {
-    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }], // Slightly larger switch
+    transform: Platform.OS === "ios" ? [{ scaleX: 0.9 }, { scaleY: 0.9 }] : [{ scaleX: 1.2 }, { scaleY: 1.2 }], // Slightly larger switch
     marginRight: 10, // Space between switch and text
   },
   rememberMeText: {
