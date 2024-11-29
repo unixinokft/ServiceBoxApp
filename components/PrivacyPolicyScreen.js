@@ -82,14 +82,14 @@ export default function PrivacyPolicyScreen({ navigation, route }) {
     }
 
     return (
-        <View style={{ paddingTop: insets.top, flex: 1, paddingBottom: "15%", padding: "5%", }}>
+        <View style={{ paddingTop: insets.top, flex: 1, paddingBottom: "15%", padding: "5%", backgroundColor: "black" }}>
             <View
                 style={{
                     position: "absolute",
-                    top: 0,
+                    top: 0
                 }}
             >
-                <BG width={Dimensions.get("screen").width + 2} height={Dimensions.get("screen").height} />
+                <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
             </View>
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: "5%" }}>
                 <TouchableOpacity onPress={() => { isAlreadyAccepted ? setPrivacyAccepted(true) : supabase.auth.signOut(); }}>

@@ -15,7 +15,11 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["location", "fetch", "remote-notification"],
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ],
         "locationAlwaysAndWhenInUsePermission": "This app needs access to your location at all times to track your location in the background.",
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location to check your current position."
       },
@@ -39,7 +43,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow ServiceBoxApp to use your location."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

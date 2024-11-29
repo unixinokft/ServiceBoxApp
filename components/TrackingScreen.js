@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, AppState, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, AppState, Animated, TouchableOpacity, Button, Platform } from 'react-native';
 import { supabase } from '../app/utils/supabase';
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import ChillBruh from "../assets/pihenek.svg"; // Az SVG fájl importja
@@ -70,6 +70,7 @@ export default function TrackingScreen({ navigation, route }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    route.params.setSession(null)
   };
 
   const handlePrivacy = async () => {
@@ -109,6 +110,14 @@ export default function TrackingScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      <View style={{ backgroundColor: "#FAFAFA", width: 80, height: Platform.OS === "ios" ? 40 : 33, position: "absolute", zIndex: 9999 }}>
+        <Button
+          name="log-out"
+          backgroundColor="#ff4d4d"
+          onPress={handleLogout}
+          title={"Logout"}
+        />
+      </View>
       {/* Háttér animációval */}
       <Animated.Image
         source={currentImage}
