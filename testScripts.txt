@@ -1,0 +1,12 @@
+1. 
+
+login without rememberMe, with privacy accepted false - move to privacy - accept
+- move to tracking screen - close the app - open the app - verify WelcomeScreen
+
+********************************************************************************
+
+2. 
+
+
+
+********************************************************************************
