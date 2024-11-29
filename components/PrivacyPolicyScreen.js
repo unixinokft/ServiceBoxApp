@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
 import { WebView } from "react-native-webview";
-import { supabase } from "../app/utils/supabase";
+import supabase from "../app/utils/supabase";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BG from "../assets/bg.svg";
 import Left from "../assets/Left.svg"
