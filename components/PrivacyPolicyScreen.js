@@ -7,12 +7,11 @@ import BG from "../assets/bg.svg";
 import Left from "../assets/Left.svg"
 import PrivacyCheckBoxArea from "./PrivacyCheckBoxArea"
 
-export default function PrivacyPolicyScreen({ navigation, route }) {
+export default function PrivacyPolicyScreen({ email, setPrivacyAccepted }) {
     const [loading, setLoading] = useState(true);
     const [accepted, setAccepted] = useState(false);
     const [isAlreadyAccepted, setIsAlreadyAccepted] = useState(false);
     const [privacyPolicy, setPrivacyPolicy] = useState("");
-    const { email, setPrivacyAccepted } = route.params;
 
     const insets = useSafeAreaInsets()
 

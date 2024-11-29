@@ -7,7 +7,7 @@ import Working from "../assets/dolgozom.svg"; // Az SVG fájl importja
 import BBOX from "../assets/bbox.svg";
 import * as Location from 'expo-location';
 
-export default function TrackingScreen({ navigation, route }) {
+export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
   const [isTracking, setIsTracking] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
 
@@ -70,11 +70,11 @@ export default function TrackingScreen({ navigation, route }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    route.params.setSession(null)
+    setSession(null)
   };
 
   const handlePrivacy = async () => {
-    route.params.setPrivacyAccepted(false)
+    setPrivacyAccepted(false)
   };
 
   const fadeAnim = useRef(new Animated.Value(1)).current; // Kezdő animáció értéke
@@ -110,7 +110,7 @@ export default function TrackingScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <View style={{ backgroundColor: "#FAFAFA", width: 80, height: Platform.OS === "ios" ? 40 : 33, position: "absolute", zIndex: 9999 }}>
+      <View style={{ backgroundColor: "#FAFAFA", width: 80, height: Platform.OS === "ios" ? 40 : 33, position: "absolute", zIndex: 9999, top: 40 }}>
         <Button
           name="log-out"
           backgroundColor="#ff4d4d"
