@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer, NavigationIndependentTree } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import supabase from './utils/supabase';
 import LoginScreen from '../components/LoginScreen';
 import TrackingScreen from '../components/TrackingScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import PrivacyPolicyScreen from '../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export default function App() {
-
-  const Stack = createStackNavigator();
+import { AppRegistry, Platform, StatusBar } from 'react-native'; // Import AppRegistry
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+const App = () => {
 
   const [session, setSession] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
   const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
+
+  useEffect(() => {
+    StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
+  }, []);
 
   useEffect(() => {
     const handleSession = async () => {
@@ -77,46 +79,33 @@ export default function App() {
   }, [session])
 
   return (
-    <NavigationIndependentTree>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {showWelcomeScreen && !session ? (
-            <Stack.Screen
-              name="Welcome"
-              component={(props) => (
-                <WelcomeScreen
-                  {...props}
-                  onContinue={() => setShowWelcomeScreen(false)}
-                />
-              )}
-              options={{ headerShown: false }}
+    <GestureHandlerRootView>
+      <SafeAreaProvider>
+        {showWelcomeScreen && !session ? (
+          <WelcomeScreen
+            onContinue={() => setShowWelcomeScreen(false)}
+          />
+        ) : session ? (
+          privacyAccepted ? (
+            <TrackingScreen
+              setPrivacyAccepted={setPrivacyAccepted}
+              setSession={setSession}
             />
-          ) : session ? (
-            // Ha még nem fogadták el az adatvédelmi nyilatkozatot
-            privacyAccepted ? (
-              <Stack.Screen
-                name="Tracking"
-                component={TrackingScreen}
-                initialParams={{ setPrivacyAccepted: setPrivacyAccepted, setSession: setSession }}
-                options={{ headerShown: false }}
-              />
-            ) : (
-              <Stack.Screen
-                name="PrivacyPolicy"
-                component={PrivacyPolicyScreen}
-                initialParams={{ email: session.user.email, setPrivacyAccepted: setPrivacyAccepted }}
-                options={{ headerShown: false }}
-              />
-            )
           ) : (
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
+            <PrivacyPolicyScreen
+              email={session.user.email}
+              setPrivacyAccepted={setPrivacyAccepted}
             />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </NavigationIndependentTree>
+          )
+        ) : (
+          <LoginScreen />
+        )}
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
+
+// Register the root component
+AppRegistry.registerComponent('main', () => App);
+
+export default App;

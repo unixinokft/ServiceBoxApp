@@ -17,7 +17,7 @@ import { Switch } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BG from "../assets/bg.svg";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
