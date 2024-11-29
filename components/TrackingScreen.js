@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, AppState, Animated, TouchableOpacity, Button, Platform } from 'react-native';
-import { supabase } from '../app/utils/supabase';
+import supabase from '../app/utils/supabase';
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import ChillBruh from "../assets/pihenek.svg"; // Az SVG fájl importja
 import Working from "../assets/dolgozom.svg"; // Az SVG fájl importja

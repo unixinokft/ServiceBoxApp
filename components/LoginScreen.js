@@ -10,7 +10,7 @@ import {
   Keyboard,
   Platform,
 } from "react-native";
-import { supabase } from "../app/utils/supabase";
+import supabase from "../app/utils/supabase";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import { Switch } from "react-native-gesture-handler";
