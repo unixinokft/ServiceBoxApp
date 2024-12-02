@@ -99,9 +99,9 @@ const App = () => {
       if (currentTimestamp - lastUpdateTimestamp >= 300000) {
         try {
           const user = await supabase.auth.getUser();
-          const userId = user.data.user?.id;
+          const email = user.data.user?.email;
 
-          if (!userId) {
+          if (!email) {
             console.error("User not authenticated.");
             return;
           }
@@ -112,7 +112,7 @@ const App = () => {
           await supabase.from('locations').insert({
             latitude,
             longitude,
-            user_id: userId,
+            email: email,
             device_time,
           });
 
@@ -162,9 +162,9 @@ const App = () => {
       if (locationsArray.length === 0) return;
 
       const user = await supabase.auth.getUser();
-      const userId = user.data.user?.id;
+      const email = user.data.user?.email;
 
-      if (!userId) {
+      if (!email) {
         console.error("User not authenticated.");
         return;
       }
@@ -173,7 +173,7 @@ const App = () => {
       await supabase.from('locations').insert(
         locationsArray.map(location => ({
           ...location,
-          user_id: userId,
+          email: email,
         }))
       );
 
