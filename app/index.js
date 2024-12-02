@@ -106,7 +106,15 @@ const App = () => {
             return;
           }
 
-          const device_time = new Date().toISOString(); // Current date and time
+          const device_time = new Date().toLocaleString('hu-HU', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+          }).replace(/\./g, '.').replace(',', '');
 
           // Attempt to send the data to Supabase
           await supabase.from('locations').insert({
