@@ -69,6 +69,9 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
   };*/
 
   const handleLogout = async () => {
+    if (isTracking) {
+      handlePress()
+    }
     await supabase.auth.signOut();
     setSession(null)
   };
