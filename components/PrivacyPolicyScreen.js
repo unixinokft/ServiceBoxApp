@@ -112,6 +112,9 @@ export default function PrivacyPolicyScreen({ email, setPrivacyAccepted }) {
                         source={{ html: privacyPolicy }}
                         style={{ backgroundColor: "#3C4044" }}
                         overScrollMode="never"
+                        javaScriptEnabled={true}
+                        mixedContentMode="always"
+                        contentMode="mobile"
                     />
                 </View>
             ) : (
