@@ -5,10 +5,12 @@ import TrackingScreen from '../components/TrackingScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import PrivacyPolicyScreen from '../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppRegistry, Platform, StatusBar } from 'react-native'; // Import AppRegistry
+import { AppRegistry, ActivityIndicator, StatusBar, View } from 'react-native'; // Import AppRegistry
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as TaskManager from 'expo-task-manager';
+import * as Font from 'expo-font'; // Import Font API from Expo
+
 const App = () => {
 
   const [session, setSession] = useState(null);
@@ -191,6 +193,32 @@ const App = () => {
     } catch (error) {
       console.error("Error sending cached locations to Supabase: ", error);
     }
+
+  }
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  // Load fonts using useEffect
+  useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        'Lexend-Bold': require('../assets/fonts/Lexend-Bold.ttf'),
+      });
+      setFontsLoaded(true); // Set state to true once fonts are loaded
+    }
+
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   return (
