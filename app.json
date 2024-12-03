@@ -4,7 +4,7 @@
     "slug": "serviceboxapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/sboxicon.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -27,7 +27,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/sboxicon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.unixino.serviceboxapp"
