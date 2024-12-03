@@ -58,7 +58,6 @@ const App = () => {
         if (session) {
           // Adatvédelmi nyilatkozat elfogadásának ellenőrzése
           if (session?.user) {
-            console.log("user logged in")
             const { data, error } = await supabase
               .from('users')
               .select('privacy_policy_accepted')
