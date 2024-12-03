@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, AppState, Animated, TouchableOpacity, Button, Platform } from 'react-native';
+import { View, Text, StyleSheet, AppState, Animated, TouchableOpacity, Button, Platform, Dimensions } from 'react-native';
 import supabase from '../app/utils/supabase';
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import ChillBruh from "../assets/pihenek.svg"; // Az SVG fájl importja
 import Working from "../assets/dolgozom.svg"; // Az SVG fájl importja
-import BBOX from "../assets/bbox.svg";
+import Logout from "../assets/images/logout.svg";
+import BBoxLogo from "./BBoxLogo"
 // import * as Location from 'expo-location';
 
 export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
@@ -111,16 +112,15 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
     });
   };
 
+  const btnWidth = Dimensions.get("screen").width * 0.9
+  const magicNumber = 3.916
+  const btnHeight = btnWidth / magicNumber
+
   return (
     <View style={styles.container}>
-      <View style={{ backgroundColor: "#FAFAFA", width: 80, height: Platform.OS === "ios" ? 40 : 33, position: "absolute", zIndex: 9999, top: 40 }}>
-        <Button
-          name="log-out"
-          backgroundColor="#ff4d4d"
-          onPress={handleLogout}
-          title={"Logout"}
-        />
-      </View>
+      <TouchableOpacity style={{ position: "absolute", zIndex: 9999, right: "5%", top: "7.61%" }} onPress={handleLogout}>
+        <Logout />
+      </TouchableOpacity>
       {/* Háttér animációval */}
       <Animated.Image
         source={currentImage}
@@ -132,16 +132,17 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
         <View style={styles.logoContainer}>
           <SvgServiceBoxLogo />
         </View>
-        <Text style={styles.title}>Válaszd ki az állapotod</Text>
-        <Text style={styles.subtitle}>
-          Állítsd be, hogy mi a jelenlegi státuszod a munkavégzés során
-        </Text>
-
+        <View style={{ paddingRight: "30%", width: "100%" }}>
+          <Text style={styles.title}>Válaszd ki az állapotod</Text>
+          <Text style={styles.subtitle}>
+            Állítsd be, hogy mi a jelenlegi státuszod a munkavégzés során
+          </Text>
+        </View>
         {/* Interaktív gomb */}
         <TouchableOpacity style={styles.button} onPress={handlePress}>
-          {isTracking ? <Working></Working> : <ChillBruh></ChillBruh>}
+          {isTracking ? <Working width={btnWidth} height={btnHeight} /> : <ChillBruh width={btnWidth} height={btnHeight} />}
         </TouchableOpacity>
-        <BBOX />
+        <BBoxLogo />
         {/* Adatkezelési tájékoztató */}
         <TouchableOpacity style={{ marginBottom: "10%" }} onPress={handlePrivacy}>
           <Text style={styles.privacyText}>Adatkezelési tájékoztató</Text>
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: "5%",
+    paddingHorizontal: Dimensions.get("screen").width * 0.05,
   },
   title: {
     color: "#FAFAFA",
@@ -175,18 +176,17 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     marginTop: "5%",
     alignSelf: "flex-start",
-    paddingRight: "30%"
+    fontFamily: 'Lexend-Bold',
   },
   subtitle: {
     marginTop: "5%",
-    paddingRight: "30%",
     color: "#929292"
   },
   button: {
     borderRadius: 25,
     alignSelf: "center",
-    margin: "10%",
-    marginBottom: "20%"
+    marginTop: "10%",
+    marginBottom: "20%",
   },
   privacyText: {
     fontSize: 14,

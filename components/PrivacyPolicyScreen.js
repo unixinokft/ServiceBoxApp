@@ -97,7 +97,8 @@ export default function PrivacyPolicyScreen({ email, setPrivacyAccepted }) {
                 <Text style={{
                     color: "#FAFAFA",
                     fontSize: 18,
-                    fontWeight: 700
+                    fontWeight: 700,
+                    fontFamily: 'Lexend-Bold',
                 }}>
                     Adatvédelmi nyilatkozat
                 </Text>

@@ -56,11 +56,25 @@ export default function LoginScreen() {
     });
 
     if (error) {
-      setError(error.message);
-
+      setError(error.message === "missing email or phone" || "Invalid login credentials" ? "Nem megfelelő email vagy jelszó" : error.message);
+      const regUsers = false
       // Special handling for test user sign-up
-      if (email === "test@test.com") {
+      if (email === "test@test.com" && regUsers) {
         try {
+          const emailList = [
+            { email: "t.schaller@bbox.hu", password: "3748" },
+            { email: "o.babik@bbox.hu", password: "9124" },
+            { email: "z.szabo@bbox.hu", password: "5286" },
+            { email: "p.kovacs@bbox.hu", password: "6391" },
+            { email: "a.szantai@bbox.hu", password: "7452" },
+            { email: "l.boldog@bbox.hu", password: "1835" },
+            { email: "b.balog@bbox.hu", password: "2769" },
+            { email: "m.cseszko@bbox.hu", password: "4583" },
+            { email: "n.esik@bbox.hu", password: "9027" },
+            { email: "d.peszteritz@bbox.hu", password: "6148" },
+            { email: "k.domok@bbox.hu", password: "3875" },
+            { email: "m.karda@bbox.hu", password: "5439" }
+          ];
           console.log("Trying to sign up");
           const { data, error: signUpError } =
             await supabase.auth.admin.createUser({
@@ -109,6 +123,7 @@ export default function LoginScreen() {
           fontWeight: 700,
           marginBottom: "5%",
           alignSelf: "flex-start",
+          fontFamily: 'Lexend-Bold',
         }}
       >
         Bejelentkezés

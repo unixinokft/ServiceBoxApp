@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "serviceboxapp",
+    "name": "ServiceBOX",
     "slug": "serviceboxapp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,14 +27,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      },
+      "package": "com.unixino.serviceboxapp"
     },
     "plugins": [
       "expo-router",

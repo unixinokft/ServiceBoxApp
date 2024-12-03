@@ -2,8 +2,8 @@ import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg";
 import BG from "../assets/bg.svg";
-import BBOX from "../assets/bbox.svg";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BBoxLogo from './BBoxLogo';
 
 export default function WelcomeScreen({ onContinue }) {
     const insets = useSafeAreaInsets();
@@ -25,7 +25,7 @@ export default function WelcomeScreen({ onContinue }) {
                 <Text style={styles.buttonText}>Kezdj neki</Text>
             </TouchableOpacity>
             <View style={styles.logoContainerBBOX}>
-                <BBOX />
+                <BBoxLogo />
             </View>
         </View>
     );
