@@ -5,8 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Text,
-  Image,
-  Dimensions,
   Keyboard,
   Platform,
 } from "react-native";
@@ -15,7 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import { Switch } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BG from "../assets/bg.svg";
+import GradientBackground from "./GradientBackground";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -69,14 +67,7 @@ export default function LoginScreen() {
 
   return (
     <View style={{ paddingTop: insets.top, marginBottom: Platform.OS === "ios" ? keyboardHeight : 0, ...styles.container }}>
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-        }}
-      >
-        <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
-      </View>
+      <GradientBackground />
       {!isKeyboardVisible && ( // Hide the logo when the keyboard is visible
         <View style={styles.logoContainer}>
           <SvgServiceBoxLogo />
