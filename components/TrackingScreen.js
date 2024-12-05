@@ -46,7 +46,7 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
 
       await Location.startLocationUpdatesAsync('LOCATION_TASK', {
         accuracy: Location.Accuracy.High,
-        timeInterval: 300000,
+        timeInterval: 60000,
         showsBackgroundLocationIndicator: true,
       });
       //alert("Location tracking started successfully");
