@@ -96,43 +96,74 @@ const App = () => {
 
   let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
 
-  TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
-    if (error) {
-      // Check if the error is due to no GPS signal
-      const { code, message } = error;
-      // Log the error to Supabase
-      try {
-        const user = await supabase.auth.getUser();
-        const email = user.data.user?.email;
-
-        if (!email) {
-          console.error("User not authenticated.");
-          return;
-        }
-
-        const error_time = new Date().toLocaleString('hu-HU', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-        }).replace(/\./g, '.').replace(',', '');
-
-        // Insert the error log into a Supabase table (e.g., 'location_errors')
-        await supabase.from('location_errors').insert({
-          email: email,
-          error_message_hun: getLocationErrorMessage(code),
-          error_message: message,
-          error_code: code,
-          error_time,
-        });
-
-      } catch (backendError) {
-        console.error("Error logging GPS issue to Supabase: ", backendError);
+  // Függvény a Supabase-ben való hibák naplózására
+  async function logErrorToSupabase(code, message) {
+    try {
+      const user = await supabase.auth.getUser();
+      const email = user.data.user?.email;
+      if (!email) {
+        console.error("User not authenticated.");
+        return;
       }
 
+      const error_time = getCurrentTimestamp();
+
+      await supabase.from('location_errors').insert({
+        email,
+        error_message_hun: getLocationErrorMessage(code),
+        error_message: message,
+        error_code: code,
+        error_time,
+      });
+    } catch (backendError) {
+      console.error("Error logging GPS issue to Supabase: ", backendError);
+    }
+  }
+
+  // Függvény a helyadatok mentésére a Supabase-be
+  async function saveLocationToSupabase(latitude, longitude) {
+    try {
+      const user = await supabase.auth.getUser();
+      const email = user.data.user?.email;
+      if (!email) {
+        console.error("User not authenticated.");
+        return;
+      }
+
+      const device_time = getCurrentTimestamp();
+
+      await supabase.from('locations').insert({
+        latitude,
+        longitude,
+        email,
+        device_time,
+      });
+
+      await sendCachedLocationsToDB(); // Tárolt adatok küldése
+    } catch (backendError) {
+      console.error("Error saving location to Supabase: ", backendError);
+      await cacheLocation({ latitude, longitude, device_time });
+    }
+  }
+
+  // Aktuális időbélyeg formázott lekérése
+  function getCurrentTimestamp() {
+    return new Date().toLocaleString('hu-HU', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).replace(/\./g, '.').replace(',', '');
+  }
+
+  // TaskManager definíció
+  TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
+    if (error) {
+      const { code, message } = error;
+      await logErrorToSupabase(code, message); // Hibák naplózása
       return;
     }
 
@@ -140,50 +171,10 @@ const App = () => {
       const { locations } = data;
       const { latitude, longitude } = locations[0].coords;
 
-      // Get the current timestamp
-      const currentTimestamp = Date.now();
-
-      // Check if 1 minute (60000 ms) have passed since the last update
-      if (currentTimestamp - lastUpdateTimestamp >= 60000) {
-        try {
-          const user = await supabase.auth.getUser();
-          const email = user.data.user?.email;
-
-          if (!email) {
-            console.error("User not authenticated.");
-            return;
-          }
-
-          const device_time = new Date().toLocaleString('hu-HU', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-          }).replace(/\./g, '.').replace(',', '');
-
-          // Attempt to send the data to Supabase
-          await supabase.from('locations').insert({
-            latitude,
-            longitude,
-            email: email,
-            device_time,
-          });
-
-          // Clear any cached locations since we're able to send data now
-          await sendCachedLocationsToDB();
-
-          // Update last update timestamp
-          lastUpdateTimestamp = currentTimestamp;
-
-        } catch (backendError) {
-          console.error("Error saving location to Supabase: ", backendError);
-
-          // Cache the location if sending fails
-          await cacheLocation({ latitude, longitude, device_time });
-        }
+      // Ellenőrizze, hogy eltelt-e 1 perc az utolsó frissítés óta
+      if (Date.now() - lastUpdateTimestamp >= 60000) {
+        await saveLocationToSupabase(latitude, longitude); // Helyadatok mentése
+        lastUpdateTimestamp = Date.now(); // Időbélyeg frissítése
       }
     }
   });
