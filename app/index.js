@@ -80,12 +80,59 @@ const App = () => {
 
   }, [session])
 
+  // Objektum a hibakódok magyar nyelvű fordításához
+  const locationErrorMessages = {
+    E_LOCATION_UNAVAILABLE: "A helyszolgáltatás nem elérhető. Lehet, hogy nincs GPS jel, vagy a helymeghatározás ki van kapcsolva.",
+    E_LOCATION_PERMISSION_DENIED: "A felhasználó megtagadta a helymeghatározási engedélyt.",
+    E_LOCATION_SETTINGS_UNSATISFIED: "A helymeghatározási beállítások nem megfelelőek (például a GPS ki van kapcsolva).",
+    E_LOCATION_TIMEOUT: "A helymeghatározás időtúllépés miatt nem sikerült.",
+    E_LOCATION_UNKNOWN: "Ismeretlen hiba történt a helymeghatározás során."
+  };
+
+  // Hibakezelő függvény
+  function getLocationErrorMessage(errorCode) {
+    return locationErrorMessages[errorCode] || "Ismeretlen hibakód.";
+  }
 
   let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
 
   TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
     if (error) {
-      alert("Error in location task: " + JSON.stringify(error));
+      // Check if the error is due to no GPS signal
+      const { code, message } = error;
+      // Log the error to Supabase
+      try {
+        const user = await supabase.auth.getUser();
+        const email = user.data.user?.email;
+
+        if (!email) {
+          console.error("User not authenticated.");
+          return;
+        }
+
+        const error_time = new Date().toLocaleString('hu-HU', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }).replace(/\./g, '.').replace(',', '');
+
+        // Insert the error log into a Supabase table (e.g., 'location_errors')
+        await supabase.from('location_errors').insert({
+          email: email,
+          error_message_hun: getLocationErrorMessage(code),
+          error_message: message,
+          error_code: code,
+          error_time,
+        });
+
+      } catch (backendError) {
+        console.error("Error logging GPS issue to Supabase: ", backendError);
+      }
+
       return;
     }
 
@@ -140,6 +187,7 @@ const App = () => {
       }
     }
   });
+
 
   /**
    * Cache the location in AsyncStorage if it cannot be sent to the DB.
