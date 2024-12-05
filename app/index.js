@@ -96,7 +96,7 @@ const App = () => {
 
   let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
 
-  // Függvény a Supabase-ben való hibák naplózására
+  // Függvény a Supabase-ben való hibák naplózására, és cache-elés, ha sikertelen
   async function logErrorToSupabase(code, message) {
     try {
       const user = await supabase.auth.getUser();
@@ -115,8 +115,15 @@ const App = () => {
         error_code: code,
         error_time,
       });
+
+      // Ha a küldés sikeres, küldjük el a cache-elt hibákat is
+      await sendCachedErrorsToDB();
+
     } catch (backendError) {
       console.error("Error logging GPS issue to Supabase: ", backendError);
+
+      // Cache-eljük a hibát, ha nem sikerül elküldeni
+      await cacheError({ code, message, error_time: getCurrentTimestamp() });
     }
   }
 
@@ -139,9 +146,14 @@ const App = () => {
         device_time,
       });
 
-      await sendCachedLocationsToDB(); // Tárolt adatok küldése
+      // Ha a küldés sikeres, küldjük el a cache-elt helyadatokat és hibákat is
+      await sendCachedLocationsToDB();
+      await sendCachedErrorsToDB();
+
     } catch (backendError) {
       console.error("Error saving location to Supabase: ", backendError);
+
+      // Cache-eljük a helyadatokat, ha nem sikerül elküldeni
       await cacheLocation({ latitude, longitude, device_time });
     }
   }
@@ -157,6 +169,52 @@ const App = () => {
       second: '2-digit',
       hour12: false,
     }).replace(/\./g, '.').replace(',', '');
+  }
+
+  // Cache-eljük a hibákat AsyncStorage-ben
+  async function cacheError(error) {
+    try {
+      const cachedErrors = await AsyncStorage.getItem('cachedErrors');
+      const errorsArray = cachedErrors ? JSON.parse(cachedErrors) : [];
+      errorsArray.push(error);
+      await AsyncStorage.setItem('cachedErrors', JSON.stringify(errorsArray));
+      console.log("Error cached.");
+    } catch (error) {
+      console.error("Error caching GPS error: ", error);
+    }
+  }
+
+  // Küldje el az összes cache-elt hibát a Supabase-be
+  async function sendCachedErrorsToDB() {
+    try {
+      const cachedErrors = await AsyncStorage.getItem('cachedErrors');
+      if (!cachedErrors) return;
+
+      const errorsArray = JSON.parse(cachedErrors);
+      if (errorsArray.length === 0) return;
+
+      const user = await supabase.auth.getUser();
+      const email = user.data.user?.email;
+
+      if (!email) {
+        console.error("User not authenticated.");
+        return;
+      }
+
+      // Küldje el az összes cache-elt hibát
+      await supabase.from('location_errors').insert(
+        errorsArray.map(error => ({
+          ...error,
+          email: email,
+        }))
+      );
+
+      // Törölje a cache-t, ha sikerült elküldeni az adatokat
+      await AsyncStorage.removeItem('cachedErrors');
+      console.log("Cached errors successfully sent to the DB.");
+    } catch (error) {
+      console.error("Error sending cached errors to Supabase: ", error);
+    }
   }
 
   // TaskManager definíció
@@ -179,11 +237,7 @@ const App = () => {
     }
   });
 
-
-  /**
-   * Cache the location in AsyncStorage if it cannot be sent to the DB.
-   * @param {Object} location The location object containing latitude, longitude, and device_time.
-   */
+  // Cache-eljük a helyadatokat AsyncStorage-ben
   async function cacheLocation(location) {
     try {
       const cachedLocations = await AsyncStorage.getItem('cachedLocations');
@@ -196,9 +250,7 @@ const App = () => {
     }
   }
 
-  /**
-   * Send all cached locations to the database.
-   */
+  // Küldje el az összes cache-elt helyadatot a Supabase-be
   async function sendCachedLocationsToDB() {
     try {
       const cachedLocations = await AsyncStorage.getItem('cachedLocations');
@@ -215,7 +267,7 @@ const App = () => {
         return;
       }
 
-      // Attempt to send all cached locations in bulk
+      // Küldje el az összes cache-elt helyadatot
       await supabase.from('locations').insert(
         locationsArray.map(location => ({
           ...location,
@@ -223,14 +275,14 @@ const App = () => {
         }))
       );
 
-      // Clear the cache if the data was successfully sent
+      // Törölje a cache-t, ha sikerült elküldeni az adatokat
       await AsyncStorage.removeItem('cachedLocations');
       console.log("Cached locations successfully sent to the DB.");
     } catch (error) {
       console.error("Error sending cached locations to Supabase: ", error);
     }
-
   }
+
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   // Load fonts using useEffect
