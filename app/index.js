@@ -137,8 +137,6 @@ const App = () => {
           // Cache the location if sending fails
           await cacheLocation({ latitude, longitude, device_time });
         }
-      } else {
-        console.log("Skipping location update to respect 5-minute interval.");
       }
     }
   });
