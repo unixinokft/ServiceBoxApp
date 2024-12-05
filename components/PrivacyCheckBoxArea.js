@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from "react-native";
 
 const PrivacyCheckBoxArea = ({ value, onValueChange }) => {
   return (
-    <View style={{ justifyContent: "space-between", ...styles.actionContainer, maxWidth: 400 }}>
+    <View style={styles.actionContainer}>
       <CheckBox value={value} onValueChange={onValueChange} disabled={!onValueChange} />
       <Text style={styles.checkboxText}>Elfogadom az adatvédelmi nyilatkozatot</Text>
     </View>
