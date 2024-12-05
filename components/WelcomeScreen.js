@@ -11,7 +11,6 @@ export default function WelcomeScreen({ onContinue }) {
     return (
         <View style={{ paddingTop: insets.top, ...styles.container }}>
             <GradientBackground />
-            {/* Use flex to center the logo */}
             <View style={styles.logoContainer}>
                 <SvgServiceBoxLogo />
             </View>
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-end", // This keeps the button at the bottom
         alignItems: "center", // Centers all content horizontally
-        padding: 16,
+        padding: "5%",
         backgroundColor: "#1c1c1e", // Dark gray background
     },
     logoContainer: {
