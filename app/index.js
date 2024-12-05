@@ -96,8 +96,8 @@ const App = () => {
       // Get the current timestamp
       const currentTimestamp = Date.now();
 
-      // Check if 5 minutes (300000 ms) have passed since the last update
-      if (currentTimestamp - lastUpdateTimestamp >= 300000) {
+      // Check if 1 minute (60000 ms) have passed since the last update
+      if (currentTimestamp - lastUpdateTimestamp >= 60000) {
         try {
           const user = await supabase.auth.getUser();
           const email = user.data.user?.email;
