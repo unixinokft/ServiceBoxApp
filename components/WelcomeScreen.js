@@ -1,23 +1,16 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg";
-import BG from "../assets/bg.svg";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BBoxLogo from './BBoxLogo';
+import GradientBackground from "./GradientBackground"
 
 export default function WelcomeScreen({ onContinue }) {
     const insets = useSafeAreaInsets();
+
     return (
         <View style={{ paddingTop: insets.top, ...styles.container }}>
-            <View
-                style={{
-                    position: "absolute",
-                    top: 0,
-                }}
-            >
-                <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
-            </View>
-            {/* Use flex to center the logo */}
+            <GradientBackground />
             <View style={styles.logoContainer}>
                 <SvgServiceBoxLogo />
             </View>
@@ -36,7 +29,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-end", // This keeps the button at the bottom
         alignItems: "center", // Centers all content horizontally
-        padding: 16,
+        padding: "5%",
         backgroundColor: "#1c1c1e", // Dark gray background
     },
     logoContainer: {

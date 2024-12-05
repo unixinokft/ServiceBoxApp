@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BG from "../assets/bg.svg";
 import Left from "../assets/Left.svg"
 import PrivacyCheckBoxArea from "./PrivacyCheckBoxArea"
+import GradientBackground from "./GradientBackground";
 
 export default function PrivacyPolicyScreen({ email, setPrivacyAccepted }) {
     const [loading, setLoading] = useState(true);
@@ -82,14 +83,7 @@ export default function PrivacyPolicyScreen({ email, setPrivacyAccepted }) {
 
     return (
         <View style={{ paddingTop: insets.top, flex: 1, paddingBottom: "15%", padding: "5%", backgroundColor: "black" }}>
-            <View
-                style={{
-                    position: "absolute",
-                    top: 0
-                }}
-            >
-                <BG width={Dimensions.get("screen").width} height={Dimensions.get("screen").height} />
-            </View>
+            <GradientBackground />
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: "5%" }}>
                 <TouchableOpacity onPress={() => { isAlreadyAccepted ? setPrivacyAccepted(true) : supabase.auth.signOut(); }}>
                     <Left />

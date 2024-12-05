@@ -111,11 +111,12 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
       }).start();
     });
   };
-
-  const btnWidth = Dimensions.get("screen").width * 0.9
+  const screenRatio = Dimensions.get("screen").height / Dimensions.get("screen").width
+  let btnWidth = Dimensions.get("screen").width * 0.9
+  btnWidth = btnWidth > 500 ? 500 : btnWidth
   const magicNumber = 3.916
   const btnHeight = btnWidth / magicNumber
-
+  const titleFontSize = btnHeight / 3
   return (
     <View style={styles.container}>
       <TouchableOpacity style={{ position: "absolute", zIndex: 9999, right: "5%", top: "7.61%" }} onPress={handleLogout}>
@@ -128,13 +129,13 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
       />
 
       {/* Fő tartalom */}
-      <View style={styles.overlay}>
+      <View style={{ width: btnWidth, ...styles.overlay }}>
         <View style={styles.logoContainer}>
           <SvgServiceBoxLogo />
         </View>
         <View style={{ paddingRight: "30%", width: "100%" }}>
-          <Text style={styles.title}>Válaszd ki az állapotod</Text>
-          <Text style={styles.subtitle}>
+          <Text style={{ fontSize: titleFontSize, lineHeight: titleFontSize + 2, ...styles.title }}>Válaszd ki az állapotod</Text>
+          <Text style={{ fontSize: titleFontSize / 2, ...styles.subtitle }}>
             Állítsd be, hogy mi a jelenlegi státuszod a munkavégzés során
           </Text>
         </View>
@@ -155,7 +156,7 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black"
+    backgroundColor: "black",
   },
   background: {
     position: 'absolute',
@@ -167,13 +168,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: Dimensions.get("screen").width * 0.05,
+    alignSelf: "center"
   },
   title: {
     color: "#FAFAFA",
-    fontSize: 30,
+    //fontSize: 30,
     fontWeight: "700",
-    lineHeight: 32,
+    //lineHeight: 32,
     marginTop: "5%",
     alignSelf: "flex-start",
     fontFamily: 'Lexend-Bold',
