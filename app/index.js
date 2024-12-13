@@ -19,6 +19,8 @@ const App = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
   const [getLocation, setGetLocation] = useState(false)
 
+  const delay = 60000
+
   useEffect(() => {
     if (Platform.OS === "ios") {
       StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
@@ -137,7 +139,7 @@ const App = () => {
         } catch (error) {
           console.error("SBOX Error fetching location manually:", error);
         }
-      }, 60000);
+      }, delay);
     }
   }, [getLocation])
 
@@ -155,7 +157,7 @@ const App = () => {
       const currentTimestamp = Date.now();
       console.log("SBOX task triggered")
       // Check if 5 minutes (60000 ms) have passed since the last update
-      if ((currentTimestamp - lastUpdateTimestamp >= 60000) || Platform.OS === "android") {
+      if ((currentTimestamp - lastUpdateTimestamp >= delay) || Platform.OS === "android") {
         alert("SBOX task sending to DB")
         try {
           const user = await supabase.auth.getUser();
@@ -292,6 +294,7 @@ const App = () => {
               setPrivacyAccepted={setPrivacyAccepted}
               setSession={setSession}
               setGetLocation={setGetLocation}
+              delay={delay}
             />
           ) : (
             <PrivacyPolicyScreen

@@ -8,7 +8,7 @@ import * as Location from 'expo-location';
 import Logout from "../assets/images/logout.svg";
 import BBoxLogo from "./BBoxLogo"
 
-export default function TrackingScreen({ setSession, setPrivacyAccepted, setGetLocation }) {
+export default function TrackingScreen({ setSession, setPrivacyAccepted, setGetLocation, delay }) {
   const [isTracking, setIsTracking] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
 
@@ -48,11 +48,11 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted, setGetL
       console.log("task starting")
       await Location.startLocationUpdatesAsync('LOCATION_TASK', {
         accuracy: Location.Accuracy.Lowest,
-        deferredUpdatesInterval: 1,
-        deferredUpdatesTimeout: 1,
-        deferredUpdatesDistance: 1,
-        timeInterval: 1,
-        distanceInterval: 1,
+        deferredUpdatesInterval: delay,
+        deferredUpdatesTimeout: delay,
+        deferredUpdatesDistance: 10,
+        timeInterval: delay,
+        distanceInterval: 10,
         showsBackgroundLocationIndicator: true,
       });
       console.log("task started")
