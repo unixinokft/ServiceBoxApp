@@ -48,6 +48,7 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
         accuracy: Location.Accuracy.High,
         timeInterval: 60000,
         showsBackgroundLocationIndicator: true,
+        deferredUpdatesInterval: 60000
       });
       //alert("Location tracking started successfully");
     } catch (error) {

@@ -5,7 +5,7 @@ import TrackingScreen from '../components/TrackingScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import PrivacyPolicyScreen from '../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppRegistry, ActivityIndicator, StatusBar, View } from 'react-native'; // Import AppRegistry
+import { AppRegistry, ActivityIndicator, StatusBar, View, Platform } from 'react-native'; // Import AppRegistry
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as TaskManager from 'expo-task-manager';
@@ -18,7 +18,9 @@ const App = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
 
   useEffect(() => {
-    StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
+    if (Platform.OS === "ios") {
+      StatusBar.setBarStyle('light-content'); // White text/icons for iOS
+    }
   }, []);
 
   useEffect(() => {
@@ -83,7 +85,7 @@ const App = () => {
   let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
 
   // Függvény a Supabase-ben való hibák naplózására, és cache-elés, ha sikertelen
-  async function logErrorToSupabase(code, message) {
+  /*async function logErrorToSupabase(code, message) {
     try {
       const user = await supabase.auth.getUser();
       const email = user.data.user?.email;
@@ -110,7 +112,7 @@ const App = () => {
       // Cache-eljük a hibát, ha nem sikerül elküldeni
       await cacheError({ code, message, error_time: getCurrentTimestamp() });
     }
-  }
+  }*/
 
   // Függvény a helyadatok mentésére a Supabase-be
   async function saveLocationToSupabase(latitude, longitude) {
@@ -133,7 +135,7 @@ const App = () => {
 
       // Ha a küldés sikeres, küldjük el a cache-elt helyadatokat és hibákat is
       await sendCachedLocationsToDB();
-      await sendCachedErrorsToDB();
+      //await sendCachedErrorsToDB();
 
     } catch (backendError) {
       console.error("Error saving location to Supabase: ", backendError);
@@ -157,7 +159,7 @@ const App = () => {
   }
 
   // Cache-eljük a hibákat AsyncStorage-ben
-  async function cacheError(error) {
+  /*async function cacheError(error) {
     try {
       const cachedErrors = await AsyncStorage.getItem('cachedErrors');
       const errorsArray = cachedErrors ? JSON.parse(cachedErrors) : [];
@@ -167,10 +169,10 @@ const App = () => {
     } catch (error) {
       console.error("Error caching GPS error: ", error);
     }
-  }
+  }*/
 
   // Küldje el az összes cache-elt hibát a Supabase-be
-  async function sendCachedErrorsToDB() {
+  /*async function sendCachedErrorsToDB() {
     try {
       const cachedErrors = await AsyncStorage.getItem('cachedErrors');
       if (!cachedErrors) return;
@@ -200,14 +202,21 @@ const App = () => {
     } catch (error) {
       console.error("Error sending cached errors to Supabase: ", error);
     }
-  }
+  }*/
 
   // TaskManager definíció
   TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
+    console.log("AAAAAAAAA")
+    console.log("Data: " + JSON.stringify(data))
+    console.log(getCurrentTimestamp())
+    console.log("Result bool: " + (Date.now() - lastUpdateTimestamp >= 60000))
+    console.log("Result: " + (Date.now() - lastUpdateTimestamp))
+    console.log("lastUpdateTimestamp: " + (lastUpdateTimestamp))
+    console.log("Dét náv: " + (Date.now()))
     if (error) {
       console.error("error at LOCATION_TASK" + JSON.stringify(error))
       const { code, message } = error;
-      await logErrorToSupabase(code, message); // Hibák naplózása
+      //await logErrorToSupabase(code, message); // Hibák naplózása
       return;
     }
 
@@ -217,8 +226,11 @@ const App = () => {
 
       // Ellenőrizze, hogy eltelt-e 1 perc az utolsó frissítés óta
       if (Date.now() - lastUpdateTimestamp >= 60000) {
+        console.log("Save locations")
         await saveLocationToSupabase(latitude, longitude); // Helyadatok mentése
+        console.log("Locations saved")
         lastUpdateTimestamp = Date.now(); // Időbélyeg frissítése
+        console.log("lastUpdateTimestamp set: " + (lastUpdateTimestamp))
       }
     }
   });
