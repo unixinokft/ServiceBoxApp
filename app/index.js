@@ -5,17 +5,19 @@ import TrackingScreen from '../components/TrackingScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import PrivacyPolicyScreen from '../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppRegistry, ActivityIndicator, StatusBar, View } from 'react-native'; // Import AppRegistry
+import { AppRegistry, ActivityIndicator, StatusBar, View, Platform } from 'react-native'; // Import AppRegistry
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as TaskManager from 'expo-task-manager';
 import * as Font from 'expo-font'; // Import Font API from Expo
+import * as Location from 'expo-location';
 
 const App = () => {
 
   const [session, setSession] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
   const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
+  const [getLocation, setGetLocation] = useState(false)
 
   useEffect(() => {
     StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
@@ -33,7 +35,7 @@ const App = () => {
           setSession(session);
         }
       } catch (error) {
-        console.error('Error checking rememberMe state or session:', error);
+        console.error('SBOX Error checking rememberMe state or session:', error);
       }
     };
 
@@ -66,22 +68,76 @@ const App = () => {
               .single();
 
             if (error) {
-              console.error('Error checking privacy policy status:', error);
+              console.error('SBOX Error checking privacy policy status:', error);
             } else {
               setPrivacyAccepted(data?.privacy_policy_accepted || false);
             }
           }
         }
       } catch (error) {
-        console.error('Error checking privacy policy:', error);
+        console.error('SBOX Error checking privacy policy:', error);
       }
     }
     checkPrivacy()
 
   }, [session])
 
+  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(0)
 
-  let lastUpdateTimestamp = 0; // Initialize a timestamp to track last update
+  useEffect(() => {
+    if (getLocation && Platform.OS === "android") {
+      setInterval(async () => {
+        try {
+          const location = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.High,
+          });
+          console.log("SBOX Manual Location:", location);
+
+          const { latitude, longitude } = location.coords;
+          try {
+            const user = await supabase.auth.getUser();
+            const email = user.data.user?.email;
+
+            if (!email) {
+              console.error("SBOX User not authenticated.");
+              return;
+            }
+
+            const device_time = new Date().toLocaleString('hu-HU', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: false,
+            }).replace(/\./g, '.').replace(',', '');
+
+            // Attempt to send the data to Supabase
+            await supabase.from('locations').insert({
+              latitude,
+              longitude,
+              email: email,
+              device_time,
+            });
+
+            // Clear any cached locations since we're able to send data now
+            await sendCachedLocationsToDB();
+
+          } catch (backendError) {
+            console.error("SBOX Error saving location to Supabase: ", backendError);
+
+            // Cache the location if sending fails
+            await cacheLocation({ latitude, longitude, device_time });
+          }
+          console.log("SBOX Location saved");
+
+        } catch (error) {
+          console.error("SBOX Error fetching location manually:", error);
+        }
+      }, 60000);
+    }
+  }, [getLocation])
 
   TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
     if (error) {
@@ -95,15 +151,16 @@ const App = () => {
 
       // Get the current timestamp
       const currentTimestamp = Date.now();
-
-      // Check if 5 minutes (300000 ms) have passed since the last update
-      if (currentTimestamp - lastUpdateTimestamp >= 300000) {
+      console.log("SBOX task triggered")
+      // Check if 5 minutes (60000 ms) have passed since the last update
+      if ((currentTimestamp - lastUpdateTimestamp >= 60000) || Platform.OS === "android") {
+        alert("SBOX task sending to DB")
         try {
           const user = await supabase.auth.getUser();
           const email = user.data.user?.email;
 
           if (!email) {
-            console.error("User not authenticated.");
+            console.error("SBOX User not authenticated.");
             return;
           }
 
@@ -129,16 +186,16 @@ const App = () => {
           await sendCachedLocationsToDB();
 
           // Update last update timestamp
-          lastUpdateTimestamp = currentTimestamp;
+          setLastUpdateTimestamp(Date.now())
 
         } catch (backendError) {
-          console.error("Error saving location to Supabase: ", backendError);
+          console.error("SBOX Error saving location to Supabase: ", backendError);
 
           // Cache the location if sending fails
           await cacheLocation({ latitude, longitude, device_time });
         }
       } else {
-        console.log("Skipping location update to respect 5-minute interval.");
+        console.log("SBOX Skipping location update to respect minute interval.");
       }
     }
   });
@@ -153,9 +210,9 @@ const App = () => {
       const locationsArray = cachedLocations ? JSON.parse(cachedLocations) : [];
       locationsArray.push(location);
       await AsyncStorage.setItem('cachedLocations', JSON.stringify(locationsArray));
-      console.log("Location cached.");
+      console.log("SBOX Location cached.");
     } catch (error) {
-      console.error("Error caching location: ", error);
+      console.error("SBOX Error caching location: ", error);
     }
   }
 
@@ -174,7 +231,7 @@ const App = () => {
       const email = user.data.user?.email;
 
       if (!email) {
-        console.error("User not authenticated.");
+        console.error("SBOX User not authenticated.");
         return;
       }
 
@@ -188,9 +245,9 @@ const App = () => {
 
       // Clear the cache if the data was successfully sent
       await AsyncStorage.removeItem('cachedLocations');
-      console.log("Cached locations successfully sent to the DB.");
+      console.log("SBOX Cached locations successfully sent to the DB.");
     } catch (error) {
-      console.error("Error sending cached locations to Supabase: ", error);
+      console.error("SBOX Error sending cached locations to Supabase: ", error);
     }
 
   }
@@ -232,6 +289,7 @@ const App = () => {
             <TrackingScreen
               setPrivacyAccepted={setPrivacyAccepted}
               setSession={setSession}
+              setGetLocation={setGetLocation}
             />
           ) : (
             <PrivacyPolicyScreen

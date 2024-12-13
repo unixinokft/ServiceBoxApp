@@ -8,7 +8,7 @@ import * as Location from 'expo-location';
 import Logout from "../assets/images/logout.svg";
 import BBoxLogo from "./BBoxLogo"
 
-export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
+export default function TrackingScreen({ setSession, setPrivacyAccepted, setGetLocation }) {
   const [isTracking, setIsTracking] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
 
@@ -24,8 +24,10 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
   useEffect(() => {
     if (isTracking) {
       startLocationTracking();
+      setGetLocation(true)
     } else {
       stopLocationTracking();
+      setGetLocation(false)
     }
   }, [isTracking]);
 
@@ -43,15 +45,21 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted }) {
         alert('Background location permission not granted');
         return;
       }
-
+      console.log("task starting")
       await Location.startLocationUpdatesAsync('LOCATION_TASK', {
-        accuracy: Location.Accuracy.High,
-        timeInterval: 300000,
+        accuracy: Location.Accuracy.Lowest,
+        deferredUpdatesInterval: 1,
+        deferredUpdatesTimeout: 1,
+        deferredUpdatesDistance: 1,
+        timeInterval: 1,
+        distanceInterval: 1,
         showsBackgroundLocationIndicator: true,
       });
+      console.log("task started")
       //alert("Location tracking started successfully");
     } catch (error) {
       alert("Error starting location tracking", JSON.stringify(error));
+      console.log(JSON.stringify(error))
     }
   };
 
