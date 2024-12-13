@@ -59,6 +59,7 @@ export default function TrackingScreen({ setSession, setPrivacyAccepted, setGetL
       //alert("Location tracking started successfully");
     } catch (error) {
       alert("Error starting location tracking", JSON.stringify(error));
+      console.error("DE MÉGIS MIÉRT?????????????????")
       console.log(JSON.stringify(error))
     }
   };

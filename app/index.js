@@ -5,25 +5,25 @@ import TrackingScreen from '../components/TrackingScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import PrivacyPolicyScreen from '../components/PrivacyPolicyScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppRegistry, ActivityIndicator, StatusBar, View, Platform } from 'react-native'; // Import AppRegistry
+import { AppRegistry, ActivityIndicator, StatusBar, View, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as TaskManager from 'expo-task-manager';
-import * as Font from 'expo-font'; // Import Font API from Expo
+import * as Font from 'expo-font';
 import * as Location from 'expo-location';
 
 const App = () => {
 
   const [session, setSession] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
-  const [privacyAccepted, setPrivacyAccepted] = useState(false); // Új állapot
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [getLocation, setGetLocation] = useState(false)
 
   const delay = 60000
 
   useEffect(() => {
     if (Platform.OS === "ios") {
-      StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
+      StatusBar.setBarStyle('light-content'); // White text/icons for iOS
     }
   }, []);
 
@@ -88,6 +88,16 @@ const App = () => {
 
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(0)
 
+  async function getUserEmail() {
+    const user = await supabase.auth.getUser();
+    const email = user.data.user?.email;
+    if (!email) {
+      console.error("SBOX User not authenticated.");
+      return;
+    }
+    return email
+  }
+
   useEffect(() => {
     if (getLocation && Platform.OS === "android") {
       setInterval(async () => {
@@ -99,14 +109,6 @@ const App = () => {
 
           const { latitude, longitude } = location.coords;
           try {
-            const user = await supabase.auth.getUser();
-            const email = user.data.user?.email;
-
-            if (!email) {
-              console.error("SBOX User not authenticated.");
-              return;
-            }
-
             const device_time = new Date().toLocaleString('hu-HU', {
               year: 'numeric',
               month: '2-digit',
@@ -118,15 +120,17 @@ const App = () => {
             }).replace(/\./g, '.').replace(',', '');
 
             // Attempt to send the data to Supabase
-            await supabase.from('locations').insert({
-              latitude,
-              longitude,
-              email: email,
-              device_time,
-            });
+            if (getLocation) {
+              await supabase.from('locations').insert({
+                latitude,
+                longitude,
+                email: await getUserEmail(),
+                device_time,
+              });
 
-            // Clear any cached locations since we're able to send data now
-            await sendCachedLocationsToDB();
+              // Clear any cached locations since we're able to send data now
+              await sendCachedLocationsToDB();
+            }
 
           } catch (backendError) {
             console.error("SBOX Error saving location to Supabase: ", backendError);
@@ -160,14 +164,6 @@ const App = () => {
       if ((currentTimestamp - lastUpdateTimestamp >= delay) || Platform.OS === "android") {
         alert("SBOX task sending to DB")
         try {
-          const user = await supabase.auth.getUser();
-          const email = user.data.user?.email;
-
-          if (!email) {
-            console.error("SBOX User not authenticated.");
-            return;
-          }
-
           const device_time = new Date().toLocaleString('hu-HU', {
             year: 'numeric',
             month: '2-digit',
@@ -182,7 +178,7 @@ const App = () => {
           await supabase.from('locations').insert({
             latitude,
             longitude,
-            email: email,
+            email: await getUserEmail(),
             device_time,
           });
 
