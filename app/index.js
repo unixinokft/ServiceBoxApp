@@ -20,7 +20,9 @@ const App = () => {
   const [getLocation, setGetLocation] = useState(false)
 
   useEffect(() => {
-    StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
+    if (Platform.OS === "ios") {
+      StatusBar.setBarStyle('light-content'); // White text/icons for both iOS and Android
+    }
   }, []);
 
   useEffect(() => {
