@@ -8,8 +8,8 @@ import * as Location from 'expo-location';
 import Logout from "../assets/images/logout.svg";
 import BBoxLogo from "./BBoxLogo"
 
-export default function TrackingScreen({ setSession, setPrivacyAccepted, setGetLocation, delay }) {
-  const [isTracking, setIsTracking] = useState(false);
+export default function TrackingScreen({ isTracking, setIsTracking, setSession, setPrivacyAccepted, setGetLocation, delay }) {
+
   const [appState, setAppState] = useState(AppState.currentState);
 
 

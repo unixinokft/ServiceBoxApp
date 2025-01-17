@@ -18,6 +18,7 @@ const App = () => {
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [getLocation, setGetLocation] = useState(false)
+  const [isTracking, setIsTracking] = useState(false);
 
   const delay = 60000
 
@@ -291,6 +292,8 @@ const App = () => {
               setSession={setSession}
               setGetLocation={setGetLocation}
               delay={delay}
+              isTracking={isTracking}
+              setIsTracking={setIsTracking}
             />
           ) : (
             <PrivacyPolicyScreen
