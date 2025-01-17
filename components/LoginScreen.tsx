@@ -12,17 +12,17 @@ import supabase from "../app/utils/supabase";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import { Switch } from "react-native-gesture-handler";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import GradientBackground from "./GradientBackground";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(true);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false); // Track keyboard visibility
   const insets = useSafeAreaInsets();
-  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -31,14 +31,14 @@ export default function LoginScreen() {
         const { height } = event.endCoordinates;
         setKeyboardHeight(height);
         setIsKeyboardVisible(true);
-      },
+      }
     );
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
       () => {
         setIsKeyboardVisible(false);
         setKeyboardHeight(0);
-      },
+      }
     );
 
     return () => {
@@ -54,11 +54,16 @@ export default function LoginScreen() {
     });
 
     if (error) {
-      setError(error.message === "missing email or phone" || "Invalid login credentials" ? "Nem megfelelő email vagy jelszó" : error.message);
+      setError(
+        error.message === "missing email or phone" ||
+          "Invalid login credentials"
+          ? "Nem megfelelő email vagy jelszó"
+          : error.message
+      );
     } else {
       // Store rememberMe choice in AsyncStorage
       try {
-        await AsyncStorage.setItem('rememberMe', rememberMe ? 'true' : 'false');
+        await AsyncStorage.setItem("rememberMe", rememberMe ? "true" : "false");
       } catch (storageError) {
         console.error("Failed to save rememberMe state:", storageError);
       }
@@ -66,7 +71,13 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={{ paddingTop: insets.top, marginBottom: Platform.OS === "ios" ? keyboardHeight : 0, ...styles.container }}>
+    <View
+      style={{
+        paddingTop: insets.top,
+        marginBottom: Platform.OS === "ios" ? keyboardHeight : 0,
+        ...styles.container,
+      }}
+    >
       <GradientBackground />
       {!isKeyboardVisible && ( // Hide the logo when the keyboard is visible
         <View style={styles.logoContainer}>
@@ -81,7 +92,7 @@ export default function LoginScreen() {
           fontWeight: 700,
           marginBottom: "5%",
           alignSelf: "flex-start",
-          fontFamily: 'Lexend-Bold',
+          fontFamily: "Lexend-Bold",
         }}
       >
         Bejelentkezés
@@ -106,9 +117,9 @@ export default function LoginScreen() {
         }}
         style={styles.input}
         keyboardType="email-address"
-        autoCapitalize="none"  // Prevent automatic capitalization
-        autoCorrect={false}    // Disable autocorrect
-        accessible={true}      // Enable accessibility features
+        autoCapitalize="none" // Prevent automatic capitalization
+        autoCorrect={false} // Disable autocorrect
+        accessible={true} // Enable accessibility features
         accessibilityLabel="Email input field"
       />
       <Text
@@ -185,7 +196,10 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   switch: {
-    transform: Platform.OS === "ios" ? [{ scaleX: 0.9 }, { scaleY: 0.9 }] : [{ scaleX: 1.2 }, { scaleY: 1.2 }], // Slightly larger switch
+    transform:
+      Platform.OS === "ios"
+        ? [{ scaleX: 0.9 }, { scaleY: 0.9 }]
+        : [{ scaleX: 1.2 }, { scaleY: 1.2 }], // Slightly larger switch
     marginRight: 10, // Space between switch and text
   },
   rememberMeText: {
