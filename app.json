@@ -36,16 +36,7 @@
       ],
       "package": "com.unixino.serviceboxapp"
     },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow ServiceBoxApp to use your location."
-        }
-      ],
-      "expo-font"
-    ],
+    "plugins": ["expo-router", "expo-font"],
     "experiments": {
       "typedRoutes": true
     },

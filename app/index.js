@@ -8,9 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppRegistry, ActivityIndicator, StatusBar, View, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as TaskManager from 'expo-task-manager';
 import * as Font from 'expo-font';
-import * as Location from 'expo-location';
 
 const App = () => {
 
@@ -99,7 +97,7 @@ const App = () => {
     return email
   }
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (getLocation && Platform.OS === "android") {
       setInterval(async () => {
         try {
@@ -146,9 +144,9 @@ const App = () => {
         }
       }, delay);
     }
-  }, [getLocation])
+  }, [getLocation])*/
 
-  TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
+  /*TaskManager.defineTask('LOCATION_TASK', async ({ data, error }) => {
     if (error) {
       alert("Error in location task: " + JSON.stringify(error));
       return;
@@ -199,7 +197,7 @@ const App = () => {
         console.log("SBOX Skipping location update to respect minute interval.");
       }
     }
-  });
+  });*/
 
   /**
    * Cache the location in AsyncStorage if it cannot be sent to the DB.

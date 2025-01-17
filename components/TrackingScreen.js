@@ -4,7 +4,6 @@ import supabase from '../app/utils/supabase';
 import SvgServiceBoxLogo from "../assets/ServiceBoxLogo.svg"; // Az SVG fájl importja
 import ChillBruh from "../assets/pihenek.svg"; // Az SVG fájl importja
 import Working from "../assets/dolgozom.svg"; // Az SVG fájl importja
-import * as Location from 'expo-location';
 import Logout from "../assets/images/logout.svg";
 import BBoxLogo from "./BBoxLogo"
 
@@ -21,7 +20,7 @@ export default function TrackingScreen({ isTracking, setIsTracking, setSession, 
     return () => subscription.remove();
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isTracking) {
       startLocationTracking();
       setGetLocation(true)
@@ -29,9 +28,9 @@ export default function TrackingScreen({ isTracking, setIsTracking, setSession, 
       stopLocationTracking();
       setGetLocation(false)
     }
-  }, [isTracking]);
+  }, [isTracking]);*/
 
-  const startLocationTracking = async () => {
+  /*const startLocationTracking = async () => {
     try {
       let responseLocationReq = await Location.requestForegroundPermissionsAsync();
       //alert(JSON.stringify(responseLocationReq))
@@ -76,7 +75,7 @@ export default function TrackingScreen({ isTracking, setIsTracking, setSession, 
     } catch (error) {
       alert("Error stopping location tracking", JSON.stringify(error));
     }
-  };
+  };*/
 
   const handleLogout = async () => {
     if (isTracking) {
