@@ -15,9 +15,14 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["location", "fetch", "remote-notification"],
-        "locationAlwaysAndWhenInUsePermission": "This app needs access to your location at all times to track your location in the background.",
-        "NSLocationWhenInUseUsageDescription": "This app needs access to your location to check your current position."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "A ServiceBOX szeretne hozzáférni a helyadataidhoz",
+        "NSLocationWhenInUseUsageDescription": "A ServiceBOX használata közben szükség van a helyadataidra",
+        "NSMotionUsageDescription": "A ServiceBOX a mozgásadatokat használja az eszköz mozgási tevékenységének (gyaloglás, jármű, bicikli stb.) meghatározásához",
+        "UIBackgroundModes": ["location", "fetch", "processing", "audio"],
+        "BGTaskSchedulerPermittedIdentifiers": [
+          "com.transistorsoft.fetch",
+          "com.transistorsoft.customtask"
+        ]
       },
       "bundleIdentifier": "com.unixino.serviceboxapp"
     },
@@ -36,7 +41,24 @@
       ],
       "package": "com.unixino.serviceboxapp"
     },
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "react-native-background-geolocation",
+        {
+          "license": "YOUR_LICENSE_KEY_HERE"
+        }
+      ],
+      [
+        "expo-gradle-ext-vars",
+        {
+          "googlePlayServicesLocationVersion": "21.1.0",
+          "appCompatVersion": "1.4.2"
+        }
+      ],
+      "react-native-background-fetch"
+    ],
     "experiments": {
       "typedRoutes": true
     },
