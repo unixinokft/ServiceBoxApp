@@ -33,6 +33,7 @@ const App = () => {
       enableHeadless: true,
       reset: true,
       locationUpdateInterval: 10000,
+      debug: true,
     },
     (state) => {
       alert("sztét: " + JSON.stringify(state));
