@@ -32,11 +32,13 @@ const App = () => {
       startOnBoot: true,
       enableHeadless: true,
       reset: true,
-      locationUpdateInterval: 10000,
+      locationUpdateInterval: 60000,
       debug: true,
+      heartbeatInterval: 60,
+      preventSuspend: true, // <-- Required for iOS
     },
     (state) => {
-      alert("sztét: " + JSON.stringify(state));
+      //alert("sztét: " + JSON.stringify(state));
       /*if (!state.enabled) {
         alert("start tracking from index");
         BackgroundGeolocation.start(); // Start tracking
@@ -104,52 +106,67 @@ const App = () => {
     checkPrivacy();
   }, [session]);
 
+  async function sendLocation(location: {
+    coords: { latitude: number; longitude: number };
+  }) {
+    const { latitude, longitude } = location.coords;
+    const device_time = new Date()
+      .toLocaleString("hu-HU", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
+      .replace(/\./g, ".")
+      .replace(",", "");
+
+    try {
+      // Insert the location into the database
+      await supabase.from("locations").insert({
+        latitude,
+        longitude,
+        email: await getUserEmail(),
+        device_time,
+      });
+
+      // Send cached locations to the database if available
+      await sendCachedLocationsToDB();
+    } catch (error) {
+      console.error("SBOX Error saving location to Supabase:", error);
+
+      // Cache the location if saving fails
+      await cacheLocation({ latitude, longitude, device_time });
+    }
+  }
+
   useEffect(() => {
     // Start or stop background geolocation based on isTracking
     if (isTracking) {
       BackgroundGeolocation.start();
 
+      const subscription = BackgroundGeolocation.onHeartbeat((event) => {
+        console.log("[onHeartbeat] ", event);
+
+        // You could request a new location if you wish.
+        BackgroundGeolocation.getCurrentPosition({
+          samples: 1,
+          persist: true,
+        }).then(async (location) => {
+          console.log("[getCurrentPosition] ", location);
+          await sendLocation(location);
+          console.log("Location sent from heartbeat");
+        });
+      });
+
       // Set up the location listener when tracking starts
-      BackgroundGeolocation.onLocation(
-        async (location) => {
-          console.log("SBOX Location:", location);
+      BackgroundGeolocation.onLocation(async (location) => {
+        console.log("SBOX Location:", location);
 
-          const { latitude, longitude } = location.coords;
-          const device_time = new Date()
-            .toLocaleString("hu-HU", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: false,
-            })
-            .replace(/\./g, ".")
-            .replace(",", "");
-
-          try {
-            // Insert the location into the database
-            await supabase.from("locations").insert({
-              latitude,
-              longitude,
-              email: await getUserEmail(),
-              device_time,
-            });
-
-            // Send cached locations to the database if available
-            await sendCachedLocationsToDB();
-          } catch (error) {
-            console.error("SBOX Error saving location to Supabase:", error);
-
-            // Cache the location if saving fails
-            await cacheLocation({ latitude, longitude, device_time });
-          }
-        },
-        (error) => {
-          console.error("SBOX Location Error:", error);
-        }
-      );
+        await sendLocation(location);
+      });
     } else {
       // Stop background geolocation if tracking is stopped
       BackgroundGeolocation.stop();
