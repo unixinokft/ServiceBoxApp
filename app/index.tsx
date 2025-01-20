@@ -27,11 +27,12 @@ const App = () => {
   BackgroundGeolocation.ready(
     {
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-      distanceFilter: 2, // Minimum movement in meters to trigger a location update
+      distanceFilter: Platform.OS === "android" ? 0 : 1,
       stopOnTerminate: false,
       startOnBoot: true,
       enableHeadless: true,
       reset: true,
+      locationUpdateInterval: 10000,
     },
     (state) => {
       alert("sztét: " + JSON.stringify(state));
