@@ -163,7 +163,7 @@ const App = () => {
       console.log("SBOX task triggered")
       // Check if 5 minutes (60000 ms) have passed since the last update
       if ((currentTimestamp - lastUpdateTimestamp >= delay) || Platform.OS === "android") {
-        alert("SBOX task sending to DB")
+        //alert("SBOX task sending to DB")
         try {
           const device_time = new Date().toLocaleString('hu-HU', {
             year: 'numeric',
