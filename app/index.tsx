@@ -34,8 +34,19 @@ const App = () => {
       reset: true,
       locationUpdateInterval: 60000,
       debug: true,
-      heartbeatInterval: 60,
+      heartbeatInterval: Platform.OS === "ios" ? 60 : undefined,
       preventSuspend: true, // <-- Required for iOS
+      //Stuff to try out
+      //locationAuthorizationRequest:"Always" //cross platform
+      /**
+       * locationAuthorizationAlert: { //iOS
+      titleWhenNotEnabled: "A szükséges helymeghatározás nincs engedélyezve",
+    titleWhenOff: "A helymeghatározás KI van kapcsolva",
+    instructions: "Be kell állítanod az 'Mindig' opciót a helymeghatározásban",
+    cancelButton: "Mégse",
+    settingsButton: "Beállítások"
+  }
+       */
     },
     (state) => {
       //alert("sztét: " + JSON.stringify(state));
