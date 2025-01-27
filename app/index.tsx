@@ -24,6 +24,24 @@ const App = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
 
+  //This is an alternative maybe cleaner solution
+
+  /*
+  // Execute a task about every 15 minutes:
+BackgroundFetch.configure({
+  minimumFetchInterval: 15
+}, async (taskId) => { // <-- This is your periodic-task callback  
+  const location = await BackgroundGeolocation.getCurrentPosition({
+    samples: 3,
+    extras: {   // <-- your own arbitrary meta-data
+      "event": "getCurrentPosition"
+    }
+  });
+  console.log('[getCurrentPosition]', location);
+  BackgroundFetch.finish(taskId);   // <-- signal that your task is complete
+})
+  */
+
   BackgroundGeolocation.ready(
     {
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
@@ -36,6 +54,13 @@ const App = () => {
       debug: true,
       heartbeatInterval: Platform.OS === "ios" ? 60 : undefined,
       preventSuspend: true, // <-- Required for iOS
+      backgroundPermissionRationale: {
+        title: "Helymeghatározás szükséges",
+        message:
+          "Az alkalmazás működéséhez szükséges a helyadatok gyűjtése háttérben is. Kérjük, engedélyezd a hozzáférést.",
+        positiveAction: "Engedélyezem",
+        negativeAction: "Elutasítom",
+      },
       //Stuff to try out
       //locationAuthorizationRequest:"Always" //cross platform
       /**
