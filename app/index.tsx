@@ -51,7 +51,6 @@ BackgroundFetch.configure({
       enableHeadless: true,
       reset: true,
       locationUpdateInterval: 60000,
-      debug: true,
       heartbeatInterval: Platform.OS === "ios" ? 60 : undefined,
       preventSuspend: true, // <-- Required for iOS
       backgroundPermissionRationale: {
