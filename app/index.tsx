@@ -50,8 +50,8 @@ BackgroundFetch.configure({
       startOnBoot: true,
       enableHeadless: true,
       reset: true,
-      locationUpdateInterval: 60000,
-      heartbeatInterval: Platform.OS === "ios" ? 60 : undefined,
+      //locationUpdateInterval: 60000, //If I use this I should be define what to do in the callback
+      heartbeatInterval: 60,
       preventSuspend: true, // <-- Required for iOS
       backgroundPermissionRationale: {
         title: "Helymeghatározás szükséges",
