@@ -24,7 +24,7 @@
           "com.transistorsoft.customtask"
         ]
       },
-      "bundleIdentifier": "com.unixino.jb.serviceboxapp"
+      "bundleIdentifier": "com.bbox.serviceboxapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -39,7 +39,7 @@
         "FOREGROUND_SERVICE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION"
       ],
-      "package": "com.unixino.jb.serviceboxapp"
+      "package": "com.bbox.serviceboxapp"
     },
     "plugins": [
       "expo-router",
