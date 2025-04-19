@@ -12,12 +12,14 @@ import {
   StatusBar,
   View,
   Platform,
+  Alert,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as Font from "expo-font";
 import { Session } from "@supabase/supabase-js";
 import { askPermission } from "./utils/utils";
+import * as SplashScreen from "expo-splash-screen";
 
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -282,13 +284,20 @@ BackgroundFetch.configure({
   useEffect(() => {
     async function initializeApp() {
       try {
+        await SplashScreen.preventAutoHideAsync();
         await Font.loadAsync({
           "Lexend-Bold": require("../assets/fonts/Lexend-Bold.ttf"),
         });
         setFontsLoaded(true);
         await askPermission();
+        await SplashScreen.hideAsync();
       } catch (error) {
-        console.error("Error during app initialization:", error);
+        Alert.alert(
+          "Initialization Error",
+          `An error occurred during app initialization: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
       }
     }
     initializeApp();
