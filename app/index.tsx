@@ -17,6 +17,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as Font from "expo-font";
 import { Session } from "@supabase/supabase-js";
+import { askPermission } from "./utils/utils";
 
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -286,6 +287,7 @@ BackgroundFetch.configure({
       setFontsLoaded(true);
     }
     loadFonts();
+    askPermission();
   }, []);
 
   if (!fontsLoaded) {
