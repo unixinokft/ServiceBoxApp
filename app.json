@@ -18,6 +18,7 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "A ServiceBOX az aktuális helyzetedet használja a munkamenet követéséhez és a pontos helyadatok rögzítéséhez logistikai célokra. Példa: a helyzeted alapján rögzíti, hogy mikor és hol kezdtél el dolgozni.",
         "NSLocationWhenInUseUsageDescription": "A ServiceBOX az aktuális helyzetedet használja a munkamenet követéséhez és a pontos helyadatok rögzítéséhez. Példa: a helyzeted alapján rögzíti, hogy mikor és hol kezdtél el dolgozni.",
         "NSMotionUsageDescription": "A ServiceBOX a mozgásadatokat használja annak meghatározására, hogy gyalogolsz, járművet vezetsz, vagy állsz. Példa: a mozgási tevékenységed alapján optimalizálja a helyadatok rögzítését.",
+        "NSUserTrackingUsageDescription": "A ServiceBOX az aktuális helyzetedet használja a munkamenet követéséhez és a pontos helyadatok rögzítéséhez logistikai célokra. Példa: a helyzeted alapján rögzíti, hogy mikor és hol kezdtél el dolgozni.",
         "UIBackgroundModes": ["location", "fetch", "processing", "audio"],
         "BGTaskSchedulerPermittedIdentifiers": [
           "com.transistorsoft.fetch",
@@ -57,7 +58,11 @@
           "appCompatVersion": "1.4.2"
         }
       ],
-      "react-native-background-fetch"
+      "react-native-background-fetch",
+      "expo-tracking-transparency",
+      {
+        "userTrackingPermission": "This identifier will be used to track your location."
+      }
     ],
     "experiments": {
       "typedRoutes": true
