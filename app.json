@@ -59,10 +59,12 @@
         }
       ],
       "react-native-background-fetch",
-      "expo-tracking-transparency",
-      {
-        "userTrackingPermission": "This identifier will be used to track your location."
-      }
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "This identifier will be used to track your location."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
