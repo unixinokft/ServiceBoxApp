@@ -280,14 +280,18 @@ BackgroundFetch.configure({
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        "Lexend-Bold": require("../assets/fonts/Lexend-Bold.ttf"),
-      });
-      setFontsLoaded(true);
+    async function initializeApp() {
+      try {
+        await Font.loadAsync({
+          "Lexend-Bold": require("../assets/fonts/Lexend-Bold.ttf"),
+        });
+        setFontsLoaded(true);
+        await askPermission();
+      } catch (error) {
+        console.error("Error during app initialization:", error);
+      }
     }
-    loadFonts();
-    askPermission();
+    initializeApp();
   }, []);
 
   if (!fontsLoaded) {

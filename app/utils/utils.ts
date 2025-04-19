@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Platform, Alert } from "react-native";
 import {
   getTrackingPermissionsAsync,
   requestTrackingPermissionsAsync,
@@ -6,10 +6,19 @@ import {
 
 export async function askPermission() {
   if (Platform.OS === "ios") {
-    const { status } = await getTrackingPermissionsAsync();
-    if (status !== "granted") {
-      const { status: newStatus } = await requestTrackingPermissionsAsync();
-      console.log("Tracking permission status:", newStatus);
+    try {
+      const { status } = await getTrackingPermissionsAsync();
+      if (status !== "granted") {
+        const { status: newStatus } = await requestTrackingPermissionsAsync();
+        console.log("Tracking permission status:", newStatus);
+      }
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        `Error requesting tracking permission: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 }
