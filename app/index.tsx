@@ -181,39 +181,47 @@ BackgroundFetch.configure({
   }
 
   useEffect(() => {
-    // Start or stop background geolocation based on isTracking
-    if (isTracking) {
-      BackgroundGeolocation.start();
+    const startTracking = async () => {
+      if (isTracking) {
+        if (Platform.OS === "ios") {
+          await askPermission(); // Request permission when tracking starts
+        }
 
-      const subscription = BackgroundGeolocation.onHeartbeat((event) => {
-        console.log("[onHeartbeat] ", event);
+        BackgroundGeolocation.start();
 
-        // You could request a new location if you wish.
-        BackgroundGeolocation.getCurrentPosition({
-          samples: 1,
-          persist: true,
-        }).then(async (location) => {
-          console.log("[getCurrentPosition] ", location);
-          await sendLocation(location);
-          console.log("Location sent from heartbeat");
+        const subscription = BackgroundGeolocation.onHeartbeat((event) => {
+          console.log("[onHeartbeat] ", event);
+
+          // Request a new location if needed
+          BackgroundGeolocation.getCurrentPosition({
+            samples: 1,
+            persist: true,
+          }).then(async (location) => {
+            console.log("[getCurrentPosition] ", location);
+            await sendLocation(location);
+            console.log("Location sent from heartbeat");
+          });
         });
-      });
 
-      // Set up the location listener when tracking starts
-      BackgroundGeolocation.onLocation(async (location) => {
-        console.log("SBOX Location:", location);
+        // Set up the location listener when tracking starts
+        BackgroundGeolocation.onLocation(async (location) => {
+          console.log("SBOX Location:", location);
 
-        await sendLocation(location);
-      });
-    } else {
-      // Stop background geolocation if tracking is stopped
-      BackgroundGeolocation.stop();
-    }
+          await sendLocation(location);
+        });
 
-    // Cleanup listeners when the component unmounts or isTracking changes
-    return () => {
-      BackgroundGeolocation.removeListeners();
+        // Cleanup listeners when tracking stops
+        return () => {
+          subscription.remove();
+          BackgroundGeolocation.removeListeners();
+        };
+      } else {
+        // Stop background geolocation if tracking is stopped
+        BackgroundGeolocation.stop();
+      }
     };
+
+    startTracking();
   }, [isTracking]); // Dependency array will trigger this useEffect when isTracking changes
 
   async function getUserEmail() {
@@ -289,7 +297,6 @@ BackgroundFetch.configure({
           "Lexend-Bold": require("../assets/fonts/Lexend-Bold.ttf"),
         });
         setFontsLoaded(true);
-        await askPermission();
         await SplashScreen.hideAsync();
       } catch (error) {
         Alert.alert(

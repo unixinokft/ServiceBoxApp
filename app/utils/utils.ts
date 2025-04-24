@@ -5,20 +5,18 @@ import {
 } from "expo-tracking-transparency";
 
 export async function askPermission() {
-  if (Platform.OS === "ios") {
-    try {
-      const { status } = await getTrackingPermissionsAsync();
-      if (status !== "granted") {
-        const { status: newStatus } = await requestTrackingPermissionsAsync();
-        console.log("Tracking permission status:", newStatus);
-      }
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        `Error requesting tracking permission: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+  try {
+    const { status } = await getTrackingPermissionsAsync();
+    if (status !== "granted") {
+      const { status: newStatus } = await requestTrackingPermissionsAsync();
+      console.log("Tracking permission status:", newStatus);
     }
+  } catch (error) {
+    Alert.alert(
+      "Error",
+      `Error requesting tracking permission: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 }
