@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import BackgroundGeolocation from "react-native-background-geolocation";
 import supabase from "./utils/supabase";
 import LoginScreen from "../components/LoginScreen";
 import TrackingScreen from "../components/TrackingScreen";
@@ -18,7 +17,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as Font from "expo-font";
 import { Session } from "@supabase/supabase-js";
-import { askPermission } from "./utils/utils";
 import * as SplashScreen from "expo-splash-screen";
 
 const App = () => {
@@ -44,48 +42,6 @@ BackgroundFetch.configure({
   BackgroundFetch.finish(taskId);   // <-- signal that your task is complete
 })
   */
-
-  BackgroundGeolocation.ready(
-    {
-      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-      distanceFilter: Platform.OS === "android" ? 0 : 1,
-      stopOnTerminate: false,
-      startOnBoot: true,
-      enableHeadless: true,
-      reset: true,
-      //locationUpdateInterval: 60000, //If I use this I should be define what to do in the callback
-      heartbeatInterval: 60,
-      preventSuspend: true, // <-- Required for iOS
-      backgroundPermissionRationale: {
-        title: "Helymeghatározás szükséges",
-        message:
-          "Az alkalmazás működéséhez szükséges a helyadatok gyűjtése háttérben is. Kérjük, engedélyezd a hozzáférést.",
-        positiveAction: "Engedélyezem",
-        negativeAction: "Elutasítom",
-      },
-      //Stuff to try out
-      //locationAuthorizationRequest:"Always" //cross platform
-      /**
-       * locationAuthorizationAlert: { //iOS
-      titleWhenNotEnabled: "A szükséges helymeghatározás nincs engedélyezve",
-    titleWhenOff: "A helymeghatározás KI van kapcsolva",
-    instructions: "Be kell állítanod az 'Mindig' opciót a helymeghatározásban",
-    cancelButton: "Mégse",
-    settingsButton: "Beállítások"
-  }
-       */
-    },
-    (state) => {
-      //alert("sztét: " + JSON.stringify(state));
-      /*if (!state.enabled) {
-        alert("start tracking from index");
-        BackgroundGeolocation.start(); // Start tracking
-      }*/
-    },
-    (error) => {
-      alert("error: " + JSON.stringify(error));
-    }
-  );
 
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -180,42 +136,6 @@ BackgroundFetch.configure({
     }
   }
 
-  useEffect(() => {
-    // Start or stop background geolocation based on isTracking
-    if (isTracking) {
-      BackgroundGeolocation.start();
-
-      const subscription = BackgroundGeolocation.onHeartbeat((event) => {
-        console.log("[onHeartbeat] ", event);
-
-        // You could request a new location if you wish.
-        BackgroundGeolocation.getCurrentPosition({
-          samples: 1,
-          persist: true,
-        }).then(async (location) => {
-          console.log("[getCurrentPosition] ", location);
-          await sendLocation(location);
-          console.log("Location sent from heartbeat");
-        });
-      });
-
-      // Set up the location listener when tracking starts
-      BackgroundGeolocation.onLocation(async (location) => {
-        console.log("SBOX Location:", location);
-
-        await sendLocation(location);
-      });
-    } else {
-      // Stop background geolocation if tracking is stopped
-      BackgroundGeolocation.stop();
-    }
-
-    // Cleanup listeners when the component unmounts or isTracking changes
-    return () => {
-      BackgroundGeolocation.removeListeners();
-    };
-  }, [isTracking]); // Dependency array will trigger this useEffect when isTracking changes
-
   async function getUserEmail() {
     const user = await supabase.auth.getUser();
     const email = user.data.user?.email;
@@ -289,7 +209,6 @@ BackgroundFetch.configure({
           "Lexend-Bold": require("../assets/fonts/Lexend-Bold.ttf"),
         });
         setFontsLoaded(true);
-        await askPermission();
         await SplashScreen.hideAsync();
       } catch (error) {
         Alert.alert(
@@ -343,7 +262,5 @@ BackgroundFetch.configure({
     </GestureHandlerRootView>
   );
 };
-
-AppRegistry.registerComponent("main", () => App);
 
 export default App;

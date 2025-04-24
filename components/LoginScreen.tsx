@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: "5%",
     color: "black", // Szöveg színe fekete
+    zIndex: 9999,
   },
   error: {
     color: "red",
