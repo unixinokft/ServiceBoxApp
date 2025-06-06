@@ -1,5 +1,5 @@
-import withGradleExtVars from 'expo-gradle-ext-vars';
+const withGradleExtVars = require('expo-gradle-ext-vars');
 
-export default ({ config }) => {
+module.exports = function (config) {
     return withGradleExtVars(config);
 };
