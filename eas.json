@@ -6,18 +6,12 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "hooks": {
-        "pre-install": "node eas-build/pre-install.js"
-      }
+      "distribution": "internal"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "hooks": {
-        "pre-install": "node eas-build/pre-install.js"
       }
     },
     "production": {
@@ -25,9 +19,6 @@
       "distribution": "store",
       "ios": {
         "enterpriseProvisioning": "adhoc"
-      },
-      "hooks": {
-        "pre-install": "node eas-build/pre-install.js"
       }
     }
   },
