@@ -6,18 +6,12 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "env": {
-        "EXPO_GRADLE_EXT_OVERRIDE_kotlinVersion": "1.9.25"
-      }
+      "distribution": "internal"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "env": {
-        "EXPO_GRADLE_EXT_OVERRIDE_kotlinVersion": "1.9.25"
       }
     },
     "production": {
@@ -25,9 +19,6 @@
       "distribution": "store",
       "ios": {
         "enterpriseProvisioning": "adhoc"
-      },
-      "env": {
-        "EXPO_GRADLE_EXT_OVERRIDE_kotlinVersion": "1.9.25"
       }
     }
   },
